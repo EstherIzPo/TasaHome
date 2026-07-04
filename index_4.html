@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabinete de Valoración Inmobiliaria — Created By Hi</title>
+<meta name="author" content="Hi">
+<style>
+:root{
+  --ink:#1e2a32; --ink-soft:#51606b; --paper:#eef1f2; --card:#ffffff;
+  --navy:#1b3a5c; --navy-d:#12283f; --amber:#a97e22; --amber-soft:#f4ead3;
+  --line:#d5dce1; --line-soft:#e6ebee; --ok:#2e7d5b; --warn:#9c3f2a;
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--paper); color:var(--ink); line-height:1.5;
+}
+.serif{font-family:Georgia,"Times New Roman",serif}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Layout ---------- */
+.app{display:grid;grid-template-columns:264px 1fr;min-height:100vh}
+.sidebar{
+  background:var(--navy-d);color:#dfe7ee;padding:26px 0 40px;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.brand{padding:0 22px 20px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:14px}
+.brand h1{font-family:Georgia,serif;font-size:1.15rem;font-weight:600;color:#fff;letter-spacing:.2px}
+.brand p{font-size:.72rem;color:#9db2c4;margin-top:4px;text-transform:uppercase;letter-spacing:.12em}
+.nav-group{padding:12px 12px 4px}
+.nav-group>span{display:block;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:#7e94a8;padding:0 10px 6px}
+.nav-btn{
+  display:block;width:100%;text-align:left;background:none;border:none;color:#cfdae4;
+  font-size:.86rem;padding:8px 10px;border-radius:7px;cursor:pointer;font-family:inherit;
+}
+.nav-btn:hover{background:rgba(255,255,255,.07)}
+.nav-btn.active{background:var(--amber);color:#fff;font-weight:600}
+.nav-btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+.main{padding:30px clamp(16px,4vw,48px) 80px;max-width:1180px}
+.panel{display:none}
+.panel.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.panel-head{margin-bottom:22px;border-bottom:3px double var(--line);padding-bottom:16px}
+.panel-head .eyebrow{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:700}
+.panel-head h2{font-family:Georgia,serif;font-size:1.7rem;font-weight:600;margin:4px 0 6px}
+.panel-head p{color:var(--ink-soft);font-size:.9rem;max-width:70ch}
+
+.grid2{display:grid;grid-template-columns:1fr 380px;gap:22px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:18px}
+.card h3{font-size:.95rem;margin-bottom:14px;color:var(--navy);display:flex;align-items:center;gap:8px}
+.card h3::before{content:"";width:8px;height:8px;background:var(--amber);border-radius:2px;display:inline-block}
+.hint{font-size:.78rem;color:var(--ink-soft);margin-top:6px}
+
+/* ---------- Forms ---------- */
+label{display:block;font-size:.78rem;font-weight:600;color:var(--ink-soft);margin-bottom:4px}
+input[type=number],input[type=text],select,textarea{
+  width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;
+  font-size:.9rem;font-family:inherit;background:#fff;color:var(--ink);
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--navy);outline-offset:1px;border-color:var(--navy)}
+.frow{display:grid;gap:12px;margin-bottom:12px}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}.c4{grid-template-columns:repeat(4,1fr)}
+.btn{
+  background:var(--navy);color:#fff;border:none;padding:10px 20px;border-radius:8px;
+  font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;
+}
+.btn:hover{background:var(--navy-d)}
+.btn:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.btn.ghost{background:none;color:var(--navy);border:1px dashed var(--navy);padding:7px 14px;font-size:.82rem}
+.btn.ghost:hover{background:#f0f4f8}
+.btn.small{padding:6px 12px;font-size:.8rem}
+
+table.testigos{width:100%;border-collapse:collapse;font-size:.83rem;margin-bottom:10px}
+table.testigos th{background:#f2f5f7;text-align:left;padding:7px 8px;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);border-bottom:2px solid var(--line)}
+table.testigos td{padding:5px 6px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+table.testigos th{white-space:nowrap}
+table.testigos input{padding:6px 8px;font-size:.84rem}
+table.testigos td>input[type=number]{min-width:92px;width:100%;max-width:130px}
+table.testigos td:first-child{font-weight:700;color:var(--navy)}
+.del{background:none;border:none;color:var(--warn);cursor:pointer;font-size:1rem;padding:2px 6px}
+.del:hover{background:#fbeeea;border-radius:5px}
+
+/* ---------- Ficha de resultado (elemento distintivo) ---------- */
+.ficha{
+  background:#fff;border:1px solid var(--navy);border-radius:var(--radius);
+  padding:0;overflow:hidden;position:sticky;top:20px;
+  box-shadow:0 1px 0 var(--navy), 0 8px 24px rgba(18,40,63,.10);
+}
+.ficha-top{background:var(--navy);color:#fff;padding:12px 18px}
+.ficha-top .eyebrow{font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:#c8d6e2}
+.ficha-top h4{font-family:Georgia,serif;font-size:1.05rem;font-weight:600;margin-top:2px}
+.ficha-body{padding:16px 18px}
+.linea{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dotted var(--line);font-size:.86rem}
+.linea span:first-child{color:var(--ink-soft)}
+.linea strong{font-variant-numeric:tabular-nums;white-space:nowrap}
+.total{
+  margin:16px -18px -16px;padding:16px 18px;background:var(--amber-soft);
+  border-top:2px solid var(--amber);
+}
+.total .lbl{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:700}
+.total .val{font-family:Georgia,serif;font-size:1.75rem;font-weight:700;color:var(--navy-d);font-variant-numeric:tabular-nums;line-height:1.15}
+.total .sub{font-size:.8rem;color:var(--ink-soft);margin-top:2px;font-variant-numeric:tabular-nums}
+.ficha .vacio{color:var(--ink-soft);font-size:.85rem;padding:8px 0}
+
+.aviso{
+  background:#fdf6ec;border:1px solid #ecd9b4;border-radius:8px;
+  padding:12px 14px;font-size:.78rem;color:#6e5518;margin-top:18px;line-height:1.55;
+}
+.aviso b{color:#584410}
+.norma{font-size:.74rem;color:var(--ink-soft);margin-top:10px;font-style:italic}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.tab{background:#fff;border:1px solid var(--line);border-radius:20px;padding:7px 16px;font-size:.82rem;cursor:pointer;font-family:inherit;color:var(--ink-soft)}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:600}
+.subpanel{display:none}.subpanel.active{display:block}
+
+/* ---------- Checklists ---------- */
+.check-item{display:flex;gap:10px;align-items:flex-start;padding:8px 4px;border-bottom:1px solid var(--line-soft);font-size:.87rem;cursor:pointer}
+.check-item input{width:17px;height:17px;margin-top:2px;accent-color:var(--navy);flex-shrink:0;cursor:pointer}
+.check-item.done{color:var(--ink-soft);text-decoration:line-through}
+.progress{height:8px;background:var(--line-soft);border-radius:4px;overflow:hidden;margin:8px 0 16px}
+.progress>div{height:100%;background:var(--amber);width:0;transition:width .3s}
+.dafo-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dafo-box{border-radius:var(--radius);padding:14px;border:1px solid var(--line)}
+.dafo-box h4{font-size:.85rem;margin-bottom:8px}
+.dafo-box textarea{min-height:110px;resize:vertical;font-size:.85rem}
+.d-D{background:#fbf0ee}.d-A{background:#fdf6ec}.d-F{background:#eef5f1}.d-O{background:#eef3f8}
+.came-tag{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.1em;padding:2px 8px;border-radius:10px;background:var(--navy);color:#fff;margin-bottom:6px}
+
+.pill{display:inline-block;background:#eef3f8;color:var(--navy);border-radius:12px;padding:2px 10px;font-size:.72rem;font-weight:600;margin:2px 4px 2px 0}
+.print-btn{position:fixed;bottom:22px;right:22px;box-shadow:0 4px 14px rgba(0,0,0,.18);z-index:50}
+
+/* ---------- Responsive ---------- */
+@media (max-width:960px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto;padding:14px 0}
+  .brand{padding:0 16px 12px}
+  .nav-group{display:inline-block;vertical-align:top;padding:8px 8px 0}
+  .sidebar nav{white-space:nowrap;overflow-x:auto;padding-bottom:8px}
+  .grid2{grid-template-columns:1fr}
+  .ficha{position:static}
+  .c3,.c4{grid-template-columns:1fr 1fr}
+  .dafo-grid{grid-template-columns:1fr}
+}
+/* ---------- Modal ---------- */
+.modal-bg{position:fixed;inset:0;background:rgba(18,40,63,.55);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:28px 14px;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:12px;max-width:680px;width:100%;box-shadow:0 18px 50px rgba(0,0,0,.3);animation:fade .2s ease}
+.modal-head{background:var(--navy);color:#fff;padding:13px 20px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.modal-head h4{font-family:Georgia,serif;font-size:1.05rem;font-weight:600}
+.modal-close{background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer;line-height:1;padding:2px 6px}
+.modal-body{padding:18px 22px 22px;font-size:.87rem;max-height:72vh;overflow-y:auto}
+.modal-body p{margin-bottom:10px}
+.modal-body ul{margin:0 0 10px 20px}
+.modal-body li{margin-bottom:5px}
+.modal-body table{width:100%;border-collapse:collapse;font-size:.82rem;margin:10px 0}
+.modal-body th{background:#f2f5f7;padding:6px 9px;text-align:left;border-bottom:2px solid var(--line);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft)}
+.modal-body td{padding:6px 9px;border-bottom:1px solid var(--line-soft)}
+.modal-foot{padding:0 22px 20px;display:flex;gap:10px;flex-wrap:wrap}
+.formula{background:#f2f5f7;border-left:3px solid var(--amber);padding:10px 14px;font-family:Georgia,serif;font-size:.98rem;margin:10px 0;border-radius:0 8px 8px 0}
+.tagp{display:inline-block;background:#eef5f1;color:var(--ok);border:1px solid #cfe3d9;border-radius:10px;padding:1px 9px;font-size:.72rem;font-weight:700;margin:1px 3px 1px 0}
+.tagm{display:inline-block;background:#f4ead3;color:#7a5c14;border:1px solid #e3d1a4;border-radius:10px;padding:1px 9px;font-size:.72rem;font-weight:700;margin:1px 3px 1px 0}
+.info-btn{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;background:var(--navy);color:#fff;border:none;font-size:.68rem;font-weight:700;cursor:pointer;margin-left:6px;vertical-align:middle;font-family:Georgia,serif;flex-shrink:0}
+.info-btn:hover{background:var(--amber)}
+th .info-btn{width:15px;height:15px;font-size:.62rem}
+/* ---------- Chips presets ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px 12px;font-size:.76rem;cursor:pointer;font-family:inherit;color:var(--ink)}
+.chip:hover{border-color:var(--amber);background:var(--amber-soft)}
+.chip.used{opacity:.4;pointer-events:none}
+/* ---------- Pasos guía ---------- */
+.step{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:#fff;overflow:hidden}
+.step-head{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer}
+.step-head:hover{background:#f6f8f9}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;flex-shrink:0;font-size:.9rem}
+.step.done .step-num{background:var(--ok)}
+.step-head h4{font-size:.92rem;flex:1}
+.step-head input{width:18px;height:18px;accent-color:var(--ok);cursor:pointer}
+.step-body{display:none;padding:2px 16px 16px 58px;font-size:.85rem;color:var(--ink-soft)}
+.step.open .step-body{display:block}
+.step-body ul{margin:6px 0 6px 18px}
+.step-body li{margin-bottom:4px}
+@media print{
+  .sidebar,.btn,.print-btn,.tabs{display:none!important}
+  .panel{display:block!important;page-break-after:always}
+  body{background:#fff}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- Asesor Homi ---------- */
+.homi-fab{position:fixed;bottom:22px;left:22px;z-index:60;background:var(--navy);color:#fff;border:none;border-radius:26px;padding:12px 20px;font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.22);display:flex;align-items:center;gap:8px;font-family:inherit}
+.homi-fab:hover{background:var(--navy-d)}
+.homi-panel{position:fixed;bottom:80px;left:22px;width:min(380px,calc(100vw - 32px));height:min(520px,70vh);background:#fff;border:1px solid var(--navy);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.3);z-index:61;display:none;flex-direction:column;overflow:hidden}
+.homi-panel.open{display:flex}
+.homi-head{background:var(--navy);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.homi-head b{font-family:Georgia,serif}
+.homi-head small{display:block;font-size:.68rem;color:#c8d6e2}
+.homi-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f4f7f9}
+.homi-b{max-width:88%;padding:9px 13px;border-radius:12px;font-size:.84rem;line-height:1.5}
+.homi-b.user{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:3px}
+.homi-b.bot{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:3px}
+.homi-b.bot .formula{font-size:.86rem}
+.homi-b.bot table{font-size:.76rem}
+.homi-in{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff}
+.homi-in input{flex:1;border:1px solid var(--line);border-radius:20px;padding:9px 14px;font-size:.86rem;font-family:inherit}
+.homi-in button{background:var(--amber);color:#fff;border:none;border-radius:20px;padding:0 18px;font-weight:700;cursor:pointer;font-family:inherit}
+.homi-chips{padding:0 12px 10px;background:#f4f7f9}
+@media print{.homi-fab,.homi-panel{display:none!important}}
+
+/* ---------- Steppers y deslizadores ---------- */
+.stp{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.stp-b{background:#f2f5f7;border:none;width:26px;height:30px;cursor:pointer;font-size:1rem;font-weight:700;color:var(--navy);line-height:1}
+.stp-b:hover{background:var(--navy);color:#fff}
+.stp input{border:none;width:52px;text-align:center;padding:5px 2px;font-size:.85rem;font-weight:600;-moz-appearance:textfield}
+.stp input::-webkit-outer-spin-button,.stp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stp input:focus{outline:none;background:#eef3f8}
+.stp input.up{color:var(--ok);background:#eef7f2}
+.stp input.down{color:var(--warn);background:#fbf0ee}
+.wrow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:6px}
+.wrow label{display:flex;justify-content:space-between;align-items:baseline}
+.wrow .wv{color:var(--amber);font-size:.92rem;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--navy);height:26px;cursor:pointer}
+.wsum{display:inline-block;border-radius:14px;padding:4px 14px;font-size:.8rem;font-weight:700;margin-bottom:10px}
+.wsum.ok{background:#eef7f2;color:var(--ok)}
+.wsum.bad{background:#fbf0ee;color:var(--warn)}
+tr.optimo td{background:var(--amber-soft);font-weight:700}
+@media (max-width:960px){.wrow{grid-template-columns:1fr 1fr}}
+
+/* ---------- Cajas de ayuda destacadas ---------- */
+.help-card{display:flex;align-items:center;gap:14px;border-radius:var(--radius);padding:13px 16px;margin-bottom:14px;cursor:pointer;border:1px solid;transition:transform .12s}
+.help-card:hover{transform:translateY(-1px)}
+.help-card .hc-ico{font-size:1.35rem;flex-shrink:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:9px}
+.help-card .hc-txt{flex:1}
+.help-card .hc-t{font-weight:700;font-size:.88rem}
+.help-card .hc-d{font-size:.76rem;opacity:.85}
+.help-card .hc-go{font-size:.76rem;font-weight:700;white-space:nowrap;border-radius:14px;padding:5px 13px}
+.hc-concept{background:#eaf0f6;border-color:#c3d2e0;color:var(--navy-d)}
+.hc-concept .hc-ico{background:var(--navy);color:#fff}
+.hc-concept .hc-go{background:var(--navy);color:#fff}
+.hc-formula{background:var(--amber-soft);border-color:#e2cf9e;color:#5c4712}
+.hc-formula .hc-ico{background:var(--amber);color:#fff}
+.hc-formula .hc-go{background:var(--amber);color:#fff}
+
+/* ---------- Saber + ---------- */
+details.saber{background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin-top:14px;overflow:hidden}
+details.saber summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:.88rem;color:var(--navy);list-style:none;display:flex;align-items:center;gap:9px;background:linear-gradient(180deg,#fff,#f4f7f9)}
+details.saber summary::-webkit-details-marker{display:none}
+details.saber summary::before{content:"+";display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;background:var(--amber);color:#fff;border-radius:6px;font-weight:800}
+details.saber[open] summary::before{content:"−"}
+details.saber .saber-body{padding:4px 16px 14px;font-size:.83rem;color:var(--ink-soft);line-height:1.6}
+details.saber .saber-body b{color:var(--ink)}
+details.saber .saber-body p{margin-bottom:8px}
+
+/* ---------- Modales de ayuda ---------- */
+.overlay{position:fixed;inset:0;background:rgba(18,40,63,.55);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:28px 14px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:12px;max-width:680px;width:100%;box-shadow:0 18px 50px rgba(0,0,0,.3);margin:auto 0}
+.modal-head{background:var(--navy);color:#fff;padding:14px 20px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.modal-head h4{font-family:Georgia,serif;font-size:1.05rem;font-weight:600}
+.modal-close{background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer;line-height:1;padding:2px 8px}
+.modal-body{padding:18px 22px;font-size:.88rem;max-height:70vh;overflow-y:auto}
+.modal-body p{margin-bottom:10px}
+.modal-body h5{margin:14px 0 6px;color:var(--navy);font-size:.85rem;text-transform:uppercase;letter-spacing:.06em}
+.formula{background:#f2f5f7;border-left:3px solid var(--amber);padding:10px 14px;font-family:Georgia,serif;font-size:1.02rem;margin:10px 0;border-radius:0 8px 8px 0}
+.mtab{width:100%;border-collapse:collapse;font-size:.82rem;margin:8px 0 12px}
+.mtab th{background:#f2f5f7;text-align:left;padding:6px 8px;border-bottom:2px solid var(--line);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft)}
+.mtab td{padding:6px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+.th-btn{background:none;border:none;font:inherit;color:var(--navy);cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;padding:0;text-align:left}
+.th-btn:hover{color:var(--amber)}
+.info-btn{background:#eef3f8;border:1px solid var(--line);color:var(--navy);border-radius:16px;padding:5px 14px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:10px}
+.info-btn:hover{background:var(--navy);color:#fff}
+
+/* ---------- Chips DAFO ---------- */
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px 11px;font-size:.75rem;margin:3px 4px 3px 0;cursor:pointer;color:var(--ink-soft)}
+.chip:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chip.used{background:var(--ok);color:#fff;border-color:var(--ok)}
+
+/* ---------- Pasos interactivos ---------- */
+.step{border:1px solid var(--line);border-radius:9px;margin-bottom:9px;background:#fff;overflow:hidden}
+.step-head{display:flex;gap:11px;padding:11px 14px;cursor:pointer;align-items:flex-start}
+.step-head input{width:18px;height:18px;margin-top:2px;accent-color:var(--ok);flex-shrink:0;cursor:pointer}
+.step-head .st-title{font-weight:600;font-size:.88rem;flex:1}
+.step-head .st-toggle{color:var(--ink-soft);font-size:.8rem;flex-shrink:0}
+.step.done .st-title{color:var(--ok)}
+.step-body{display:none;padding:0 14px 13px 43px;font-size:.84rem;color:var(--ink-soft);line-height:1.55}
+.step.open .step-body{display:block}
+.step-body b{color:var(--ink)}
+.plazo-tag{display:inline-block;background:var(--amber-soft);color:#6e5518;border-radius:10px;padding:1px 9px;font-size:.72rem;font-weight:700;margin-left:6px}
+
+/* ---------- Normativa ---------- */
+.norm-item{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line-soft)}
+.norm-item .nm{font-size:.88rem;font-weight:600}
+.norm-item .nd{font-size:.78rem;color:var(--ink-soft)}
+.norm-item a{background:var(--navy);color:#fff;text-decoration:none;border-radius:7px;padding:6px 14px;font-size:.78rem;font-weight:600;white-space:nowrap}
+.norm-item a:hover{background:var(--navy-d)}
+
+/* ---------- Informe ---------- */
+#report-view .modal{max-width:800px}
+.rep-doc{font-size:.88rem}
+.rep-doc h1{font-family:Georgia,serif;font-size:1.35rem;color:var(--navy-d);margin-bottom:2px}
+.rep-doc .rep-meta{font-size:.76rem;color:var(--ink-soft);margin-bottom:14px}
+.rep-doc h2{font-family:Georgia,serif;font-size:1.02rem;color:var(--navy);margin:16px 0 6px;border-bottom:2px solid var(--line);padding-bottom:4px}
+.rep-doc ul{margin:4px 0 10px 20px}
+.rep-doc li{margin-bottom:3px}
+@media print{
+  body.report-mode .app,body.report-mode .print-btn{display:none!important}
+  body.report-mode #report-view{position:static;display:block;padding:0;background:#fff}
+  body.report-mode #report-view .modal{box-shadow:none;max-width:100%}
+  body.report-mode #report-view .modal-head,body.report-mode #report-view .rep-actions{display:none}
+  body.report-mode #report-view .modal-body{max-height:none;overflow:visible}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">
+    <h1>Gabinete de Valoración</h1>
+    <p>Herramienta profesional · agencia</p>
+    <p style="margin-top:6px;font-size:.72rem;color:#c9a55a;font-style:italic;text-transform:none;letter-spacing:.02em">Created By Hi</p>
+  </div>
+  <nav>
+    <div class="nav-group"><span>Valoración</span>
+      <button class="nav-btn active" data-panel="p-local">Local comercial</button>
+      <button class="nav-btn" data-panel="p-vivienda">Vivienda · comparación</button>
+      <button class="nav-btn" data-panel="p-coste">Coste de reposición</button>
+      <button class="nav-btn" data-panel="p-solar">Solar · residual</button>
+      <button class="nav-btn" data-panel="p-obra">Obra en construcción</button>
+      <button class="nav-btn" data-panel="p-rustica">Finca rústica</button>
+      <button class="nav-btn" data-panel="p-renta">Inmueble arrendado</button>
+      <button class="nav-btn" data-panel="p-alquiler">Alquiler · renta óptima</button>
+      <button class="nav-btn" data-panel="p-simulador">Simulador de escenarios</button>
+    </div>
+    <div class="nav-group"><span>Fiscalidad</span>
+      <button class="nav-btn" data-panel="p-fiscal">Venta · herencia · donación · divorcio</button>
+    </div>
+    <div class="nav-group"><span>Análisis</span>
+      <button class="nav-btn" data-panel="p-macro">Macroentorno</button>
+      <button class="nav-btn" data-panel="p-dafo">DAFO + CAME</button>
+      <button class="nav-btn" data-panel="p-mkt">Marketing</button>
+    </div>
+    <div class="nav-group"><span>Guías y consulta</span>
+      <button class="nav-btn" data-panel="p-guia">Guía: de arras a registro</button>
+      <button class="nav-btn" data-panel="p-hipoteca">Hipoteca y ejecución</button>
+      <button class="nav-btn" data-panel="p-normas">Normativa</button>
+      <button class="nav-btn" data-panel="p-formulas">Biblioteca de fórmulas</button>
+    </div>
+  </nav>
+</aside>
+
+<main class="main">
+<!-- ==================== LOCAL COMERCIAL ==================== -->
+<section class="panel active" id="p-local">
+  <div class="panel-head">
+    <div class="eyebrow">Método de comparación</div>
+    <h2>Valoración de local comercial</h2>
+    <p>Elige el sistema de comparación. Introduce los datos de locales testigo transmitidos u ofertados recientemente en la misma zona comercial (mínimo recomendable: 6 comparables).</p>
+  </div>
+  <div class="tabs" id="tabs-local">
+    <button class="tab active" data-sub="s-homog">Homogeneización</button>
+    <button class="tab" data-sub="s-pond">Ponderación</button>
+    <button class="tab" data-sub="s-tf">Tabla de fondo</button>
+    <button class="tab" data-sub="s-clasico">Clásico (media €/m²)</button>
+  </div>
+
+  <div class="grid2">
+  <div>
+    <!-- Homogeneización -->
+    <div class="subpanel active" id="s-homog">
+      <div class="card">
+        <h3>Local a valorar</h3>
+        <div class="frow c2">
+          <div><label>Superficie (m²)</label><input type="number" id="h-sup" value="120" min="1"></div>
+          <div><label>Coef. corrector oferta (0,70–1,00)</label><input type="number" id="h-oferta" value="0.95" step="0.01" min="0.7" max="1"></div>
+        </div>
+        <p class="hint">Si los testigos son precios de oferta (no de venta cerrada), aplica un corrector entre 0,70 y 1 debidamente justificado.</p>
+      </div>
+      <div class="card">
+        <h3>Testigos y coeficientes correctores</h3>
+        <p class="hint" style="margin-bottom:10px">Ajusta cada coeficiente con los botones − / + en saltos de 0,05: <b style="color:var(--ok)">verde</b> si tu local es mejor que el testigo en esa variable, <b style="color:var(--warn)">rojo</b> si es peor. Pulsa el título de cada columna para ver la guía con ejemplos.</p>
+        <div style="overflow-x:auto">
+        <table class="testigos" id="tbl-homog">
+          <thead><tr><th>Testigo</th><th>Precio total €</th><th>Sup. m²</th><th>C. situación</th><th>C. antigüedad</th><th>C. superficie</th><th>C. otros</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+        <button class="btn ghost" onclick="addRowHomog()">+ Añadir testigo</button>
+      </div>
+      <button class="btn" onclick="calcHomog()">Calcular valor</button>
+    </div>
+
+    <!-- Ponderación -->
+    <div class="subpanel" id="s-pond">
+      <div class="card">
+        <h3>Variables y pesos</h3>
+        <p class="hint" style="margin-bottom:10px">Reparte los pesos con los deslizadores (deben sumar 100 %) y puntúa de 1 a 10 cada variable con los botones − / +.</p>
+        <span class="wsum ok" id="pd-wsum">Suma de pesos: 100 %</span>
+        <div class="wrow">
+          <div><label>Situación <b class="wv" id="pd-w1v">40 %</b></label><input type="range" id="pd-w1" min="0" max="100" step="5" value="40" oninput="wSync()"></div>
+          <div><label>Calidad <b class="wv" id="pd-w2v">25 %</b></label><input type="range" id="pd-w2" min="0" max="100" step="5" value="25" oninput="wSync()"></div>
+          <div><label>Fachada/escaparate <b class="wv" id="pd-w3v">20 %</b></label><input type="range" id="pd-w3" min="0" max="100" step="5" value="20" oninput="wSync()"></div>
+          <div><label>Estado <b class="wv" id="pd-w4v">15 %</b></label><input type="range" id="pd-w4" min="0" max="100" step="5" value="15" oninput="wSync()"></div>
+        </div>
+        <div class="frow c2">
+          <div><label>Superficie local a valorar (m²)</label><input type="number" id="pd-sup" value="120"></div>
+          <div><label>Puntuaciones del local a valorar (sit / cal / fach / est)</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="stp"><button type="button" class="stp-b" onclick="stp(this,-1)">−</button><input id="pd-o1" type="number" value="8" data-st="1" data-min="1" data-max="10"><button type="button" class="stp-b" onclick="stp(this,1)">+</button></span>
+              <span class="stp"><button type="button" class="stp-b" onclick="stp(this,-1)">−</button><input id="pd-o2" type="number" value="7" data-st="1" data-min="1" data-max="10"><button type="button" class="stp-b" onclick="stp(this,1)">+</button></span>
+              <span class="stp"><button type="button" class="stp-b" onclick="stp(this,-1)">−</button><input id="pd-o3" type="number" value="8" data-st="1" data-min="1" data-max="10"><button type="button" class="stp-b" onclick="stp(this,1)">+</button></span>
+              <span class="stp"><button type="button" class="stp-b" onclick="stp(this,-1)">−</button><input id="pd-o4" type="number" value="7" data-st="1" data-min="1" data-max="10"><button type="button" class="stp-b" onclick="stp(this,1)">+</button></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Testigos</h3>
+        <div style="overflow-x:auto">
+        <table class="testigos" id="tbl-pond">
+          <thead><tr><th>Testigo</th><th>€/m²</th><th>Situación</th><th>Calidad</th><th>Fachada</th><th>Estado</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+        <button class="btn ghost" onclick="addRowPond()">+ Añadir testigo</button>
+      </div>
+      <button class="btn" onclick="calcPond()">Calcular valor</button>
+    </div>
+
+    <!-- Tabla de fondo -->
+    <div class="subpanel" id="s-tf">
+      <div class="card">
+        <h3>Local a valorar</h3>
+        <div class="frow c2">
+          <div><label>Superficie (m²)</label><input type="number" id="tf-sup" value="325"></div>
+          <div><label>Porcentajes de las cuadrículas (separados por comas)</label><input type="text" id="tf-grid" value="100,100,100,95,95,95,80,80,80,75,75,40" placeholder="100,100,95,..."></div>
+        </div>
+        <p class="hint">Divide el local en crujías desde el escaparate hacia el fondo (100 % la primera banda, porcentajes decrecientes hacia atrás; esquinas y zonas oscuras penalizan). El coeficiente de tabla de fondo = suma de porcentajes ÷ número de cuadrículas.</p>
+      </div>
+      <div class="card">
+        <h3>Testigos</h3>
+        <p class="hint" style="margin-bottom:10px">La ponderación refleja la similitud de uso y ubicación con el local a valorar; el total debe sumar 100 %.</p>
+        <div style="overflow-x:auto">
+        <table class="testigos" id="tbl-tf">
+          <thead><tr><th>Testigo</th><th>€/m² venta</th><th>C.T.F. testigo</th><th>Ponderación %</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+        <button class="btn ghost" onclick="addRowTF()">+ Añadir testigo</button>
+      </div>
+      <button class="btn" onclick="calcTF()">Calcular valor</button>
+    </div>
+
+    <!-- Clásico -->
+    <div class="subpanel" id="s-clasico">
+      <div class="card">
+        <h3>Media simple de repercusiones</h3>
+        <div class="frow c2">
+          <div><label>Superficie local a valorar (m²)</label><input type="number" id="cl-sup" value="120"></div>
+          <div><label>€/m² de los testigos (separados por comas)</label><input type="text" id="cl-precios" value="1850,2300,1720,1950,2100,1980"></div>
+        </div>
+        <p class="hint">Sistema orientativo: media aritmética de los precios unitarios de testigos muy similares. Útil como primera aproximación cuando los comparables son casi idénticos.</p>
+      </div>
+      <button class="btn" onclick="calcClasico()">Calcular valor</button>
+    </div>
+
+    <div class="aviso"><b>Aviso profesional.</b> Estos cálculos son estimaciones de valor de mercado para trabajo de agencia (captación, fijación de precio, negociación). La tasación oficial con efectos hipotecarios debe emitirla una sociedad de tasación homologada por el Banco de España conforme a la Orden ECO/805/2003, con inspección ocular, comprobaciones registrales y al menos 6 comparables documentados en el informe.</div>
+  </div>
+  <div><div class="ficha" id="ficha-local">
+    <div class="ficha-top"><div class="eyebrow">Ficha de cálculo</div><h4>Local comercial</h4></div>
+    <div class="ficha-body"><p class="vacio">Introduce los datos y pulsa «Calcular valor».</p></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ==================== VIVIENDA ==================== -->
+<section class="panel" id="p-vivienda">
+  <div class="panel-head">
+    <div class="eyebrow">Método de comparación · Orden ECO/805/2003</div>
+    <h2>Valoración de vivienda</h2>
+    <p>Homogeneización de testigos por coeficientes correctores. Introduce al menos 6 viviendas comparables de la misma zona, tipología y estado similares.</p>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="card">
+      <h3>Vivienda a valorar</h3>
+      <div class="frow c3">
+        <div><label>Superficie construida (m²)</label><input type="number" id="v-sup" value="90"></div>
+        <div><label>Coef. corrector oferta (0,70–1,00)</label><input type="number" id="v-oferta" value="0.95" step="0.01"></div>
+        <div><label>Finalidad</label>
+          <select id="v-fin">
+            <option value="mercado">Valor de mercado (venta)</option>
+            <option value="hipo">Orientación valor hipotecario</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Testigos y coeficientes</h3>
+      <div style="overflow-x:auto">
+      <table class="testigos" id="tbl-viv">
+        <thead><tr><th>Testigo</th><th>Precio €</th><th>Sup. m²</th><th>C. situación</th><th>C. planta/altura</th><th>C. antigüedad/estado</th><th>C. calidad</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <button class="btn ghost" onclick="addRowViv()">+ Añadir testigo</button>
+    </div>
+    <button class="btn" onclick="calcViv()">Calcular valor</button>
+    <div class="aviso"><b>Recuerda.</b> Para finalidad hipotecaria la Orden ECO/805/2003 exige eliminar elementos especulativos y aplicar el principio de prudencia: el valor hipotecario puede ser inferior al de mercado. El informe oficial exige 6 comparables documentados y justificación expresa de los criterios de homogeneización.</div>
+  </div>
+  <div><div class="ficha" id="ficha-viv">
+    <div class="ficha-top"><div class="eyebrow">Ficha de cálculo</div><h4>Vivienda</h4></div>
+    <div class="ficha-body"><p class="vacio">Introduce los datos y pulsa «Calcular valor».</p></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ==================== COSTE DE REPOSICIÓN ==================== -->
+<section class="panel" id="p-coste">
+  <div class="panel-head">
+    <div class="eyebrow">Método del coste · Orden ECO/805/2003</div>
+    <h2>Coste de reposición (bruto y neto)</h2>
+    <p>Valor del inmueble = valor del suelo + coste de construcción actual + gastos necesarios, menos la depreciación física y funcional (valor neto). El suelo no se deprecia.</p>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="card">
+      <h3>Componentes del valor</h3>
+      <div class="frow c2">
+        <div><label>Valor del suelo (€) — por comparación o residual</label><input type="number" id="cr-suelo" value="60000"></div>
+        <div><label>Superficie construida (m²)</label><input type="number" id="cr-sup" value="90"></div>
+      </div>
+      <div class="frow c2">
+        <div><label>Coste de construcción actual (€/m²)</label><input type="number" id="cr-cc" value="750"></div>
+        <div><label>Gastos necesarios (% sobre construcción)</label><input type="number" id="cr-gastos" value="14"></div>
+      </div>
+      <p class="hint">Gastos necesarios: honorarios técnicos, licencias y tributos no recuperables, seguros obligatorios, gastos de administración del promotor. No se incluyen gastos financieros ni de comercialización.</p>
+    </div>
+    <div class="card">
+      <h3>Depreciación física (amortización lineal)</h3>
+      <div class="frow c3">
+        <div><label>Uso del edificio (vida útil máx. ECO/805)</label>
+          <select id="cr-uso" onchange="document.getElementById('cr-vu').value=this.value">
+            <option value="100">Residencial · 100 años</option>
+            <option value="75">Oficinas · 75 años</option>
+            <option value="50">Comercial · 50 años</option>
+            <option value="35">Industrial · 35 años</option>
+          </select>
+        </div>
+        <div><label>Vida útil aplicada (años)</label><input type="number" id="cr-vu" value="100"></div>
+        <div><label>Antigüedad (años)</label><input type="number" id="cr-ant" value="25"></div>
+      </div>
+      <div class="frow c2">
+        <div><label>Depreciación funcional adicional (€)</label><input type="number" id="cr-func" value="0"></div>
+        <div><label>&nbsp;</label><p class="hint">Coste de las obras necesarias para adaptar el edificio a su uso (instalaciones obsoletas, distribución inadecuada…).</p></div>
+      </div>
+    </div>
+    <button class="btn" onclick="calcCoste()">Calcular VRB y VRN</button>
+  </div>
+  <div><div class="ficha" id="ficha-coste">
+    <div class="ficha-top"><div class="eyebrow">Ficha de cálculo</div><h4>Coste de reposición</h4></div>
+    <div class="ficha-body"><p class="vacio">Introduce los datos y pulsa «Calcular».</p></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ==================== SOLAR RESIDUAL ==================== -->
+<section class="panel" id="p-solar">
+  <div class="panel-head">
+    <div class="eyebrow">Método residual estático · Orden ECO/805/2003</div>
+    <h2>Valor de un solar</h2>
+    <p>F = VM × (1 − b) − Σ Ci. El valor del suelo es lo que queda del valor de mercado del producto terminado tras descontar el beneficio del promotor y todos los costes y gastos de la promoción.</p>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="card">
+      <h3>Producto inmobiliario a promover</h3>
+      <div class="frow c3">
+        <div><label>Superficie edificable (m² sobre rasante)</label><input type="number" id="rs-edif" value="1000"></div>
+        <div><label>Valor de mercado del producto terminado (€/m²)</label><input type="number" id="rs-vm" value="2200"></div>
+        <div><label>Uso previsto (margen orientativo Anexo IV)</label>
+          <select id="rs-uso" onchange="document.getElementById('rs-b').value=this.value">
+            <option value="18">Vivienda 1ª residencia · 18 %</option>
+            <option value="24">Vivienda 2ª residencia · 24 %</option>
+            <option value="21">Oficinas · 21 %</option>
+            <option value="24">Locales comerciales · 24 %</option>
+            <option value="27">Naves industriales · 27 %</option>
+            <option value="20">Aparcamientos · 20 %</option>
+            <option value="22">Hoteles · 22 %</option>
+          </select>
+        </div>
+      </div>
+      <div class="frow c3">
+        <div><label>Margen de beneficio del promotor b (%)</label><input type="number" id="rs-b" value="18"></div>
+        <div><label>Coste de construcción (€/m²)</label><input type="number" id="rs-cc" value="800"></div>
+        <div><label>Gastos necesarios de promoción (% s/ construcción)</label><input type="number" id="rs-g" value="16"></div>
+      </div>
+      <p class="hint">Los márgenes del Anexo IV son mínimos sin financiación ajena y pueden actualizarse por norma: verifica el vigente y ajústalo manualmente si procede. Para promociones a más de un año, valora aplicar el residual dinámico (flujos de caja actualizados).</p>
+    </div>
+    <button class="btn" onclick="calcResidual()">Calcular valor del solar</button>
+  </div>
+  <div><div class="ficha" id="ficha-solar">
+    <div class="ficha-top"><div class="eyebrow">Ficha de cálculo</div><h4>Solar · residual estático</h4></div>
+    <div class="ficha-body"><p class="vacio">Introduce los datos y pulsa «Calcular».</p></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ==================== OBRA EN CONSTRUCCIÓN ==================== -->
+<section class="panel" id="p-obra">
+  <div class="panel-head">
+    <div class="eyebrow">Valoración de edificios en construcción</div>
+    <h2>Edificio en construcción o rehabilitación</h2>
+    <p>Valor actual = valor del suelo + obra ejecutada + gastos necesarios proporcionales al avance. Se calcula también la hipótesis de edificio terminado como referencia.</p>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="card">
+      <h3>Datos de la promoción</h3>
+      <div class="frow c2">
+        <div><label>Valor del suelo (€)</label><input type="number" id="ob-suelo" value="300000"></div>
+        <div><label>Presupuesto total de construcción (€)</label><input type="number" id="ob-pres" value="900000"></div>
+      </div>
+      <div class="frow c3">
+        <div><label>% de obra ejecutada (última certificación)</label><input type="number" id="ob-pct" value="55" min="0" max="100"></div>
+        <div><label>Gastos necesarios (% s/ construcción)</label><input type="number" id="ob-g" value="14"></div>
+        <div><label>Valor de mercado previsto terminado (€)</label><input type="number" id="ob-vt" value="1600000"></div>
+      </div>
+      <p class="hint">Documentación exigible: proyecto visado, licencia de obras, última certificación de obra ejecutada y contrato de ejecución. Sin gastos financieros ni de comercialización en el coste.</p>
+    </div>
+    <button class="btn" onclick="calcObra()">Calcular valor actual</button>
+  </div>
+  <div><div class="ficha" id="ficha-obra">
+    <div class="ficha-top"><div class="eyebrow">Ficha de cálculo</div><h4>Obra en construcción</h4></div>
+    <div class="ficha-body"><p class="vacio">Introduce los datos y pulsa «Calcular».</p></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ==================== RÚSTICA ==================== -->
+<section class="panel" id="p-rustica">
+  <div class="panel-head">
+    <div class="eyebrow">Suelo rural · RD 1492/2011 (Reglamento de Valoraciones Ley de Suelo)</div>
+    <h2>Finca rústica</h2>
+    <p>Capitalización de la renta anual real o potencial de la explotación (se toma la superior), con coeficiente corrector por tipo de cultivo y factor global de localización. Se añaden edificaciones no vinculadas a la explotación.</p>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="card">
+      <h3>Renta de la explotación</h3>
+      <div class="frow c3">
+        <div><label>Superficie (hectáreas)</label><input type="number" id="ru-ha" value="10"></div>
+        <div><label>Renta anual neta (€/ha)</label><input type="number" id="ru-renta" value="600"></div>
+        <div><label>Tipo de capitalización base (%)</label><input type="number" id="ru-tipo" value="3.2" step="0.1"></div>
+      </div>
+      <p class="hint">Renta neta = ingresos de la explotación − costes. El tipo base se publica anualmente en la Ley de Presupuestos (rendimiento de la deuda del Estado): compruébalo en el ejercicio corriente.</p>
+    </div>
+    <div class="card">
+      <h3>Correcciones</h3>
+      <div class="frow c2">
+        <div><label>Tipo de cultivo (coef. Anexo I RD 1492/2011)</label>
+          <select id="ru-cultivo">
+            <option value="0.49">Labor secano / cinegéticas · 0,49</option>
+            <option value="0.78">Labor regadío · 0,78</option>
+            <option value="0.78">Hortalizas aire libre · 0,78</option>
+            <option value="0.78">Cultivos protegidos regadío · 0,78</option>
+            <option value="0.61">Frutales cítricos · 0,61</option>
+            <option value="0.72">Frutales no cítricos · 0,72</option>
+            <option value="0.59">Viñedo · 0,59</option>
+            <option value="0.43" selected>Olivar · 0,43</option>
+            <option value="0.75">Platanera · 0,75</option>
+            <option value="0.39">Prados naturales · 0,39</option>
+            <option value="0.51">Pastizales · 0,51</option>
+            <option value="0.64">Otras agropecuarias · 0,64</option>
+            <option value="0.58">Explotaciones forestales · 0,58</option>
+          </select>
+        </div>
+        <div><label>Factor global de localización u (1,00–2,00)</label><input type="number" id="ru-u" value="1.00" step="0.05" min="1" max="2"></div>
+      </div>
+      <div class="frow c2">
+        <div><label>Edificaciones no vinculadas a la explotación (€)</label><input type="number" id="ru-edif" value="0"></div>
+        <div><label>&nbsp;</label><p class="hint">u = u1·u2·u3 (accesibilidad a núcleos, a centros de actividad y valor ambiental/paisajístico), con tope legal de 2.</p></div>
+      </div>
+    </div>
+    <button class="btn" onclick="calcRustica()">Calcular valor</button>
+    <div class="aviso"><b>Finalidad hipotecaria.</b> Para hipoteca (ECO/805/2003) el valor de la tierra es el <b>menor</b> entre el obtenido por comparación con fincas análogas y el de actualización de la explotación. El cálculo de esta pantalla sigue el reglamento estatal de valoraciones del suelo (expropiación, reparcelación, responsabilidad patrimonial).</div>
+  </div>
+  <div><div class="ficha" id="ficha-rustica">
+    <div class="ficha-top"><div class="eyebrow">Ficha de cálculo</div><h4>Finca rústica</h4></div>
+    <div class="ficha-body"><p class="vacio">Introduce los datos y pulsa «Calcular».</p></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ==================== ARRENDADO / ANALÍTICO ==================== -->
+<section class="panel" id="p-renta">
+  <div class="panel-head">
+    <div class="eyebrow">Método analítico · actualización de rentas</div>
+    <h2>Inmueble arrendado o ligado a explotación</h2>
+    <p>El valor se obtiene actualizando la renta neta que el inmueble es capaz de generar: V = renta neta anual ÷ tipo de actualización.</p>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="card">
+      <h3>Flujos del inmueble</h3>
+      <div class="frow c3">
+        <div><label>Renta mensual (€)</label><input type="number" id="an-renta" value="1200"></div>
+        <div><label>Meses de ocupación al año</label><input type="number" id="an-meses" value="12" min="1" max="12"></div>
+        <div><label>Gastos anuales a cargo de la propiedad (€)</label><input type="number" id="an-gastos" value="1800"></div>
+      </div>
+      <p class="hint">Gastos: IBI, comunidad, seguro, mantenimiento, periodos de vacancia estimados, administración. La renta debe ser la de mercado; si el contrato tiene componentes especulativos, sustitúyela por la de inmuebles comparables.</p>
+      <div class="frow c2">
+        <div><label>Tipo de actualización (%)</label><input type="number" id="an-tipo" value="5.5" step="0.1"></div>
+        <div><label>&nbsp;</label><p class="hint">Tipo libre de riesgo (deuda pública) + prima de riesgo según uso, liquidez y solvencia del inquilino.</p></div>
+      </div>
+    </div>
+    <button class="btn" onclick="calcAnalitico()">Calcular valor por actualización</button>
+  </div>
+  <div><div class="ficha" id="ficha-renta">
+    <div class="ficha-top"><div class="eyebrow">Ficha de cálculo</div><h4>Actualización de rentas</h4></div>
+    <div class="ficha-body"><p class="vacio">Introduce los datos y pulsa «Calcular».</p></div>
+  </div></div>
+  </div>
+</section>
+<!-- ==================== FISCAL ==================== -->
+<section class="panel" id="p-fiscal">
+  <div class="panel-head">
+    <div class="eyebrow">Estimación fiscal orientativa</div>
+    <h2>Supuestos: compraventa · herencia · donación · divorcio</h2>
+    <p>Calcula el valor del inmueble en la pestaña de valoración correspondiente y aquí estima la carga fiscal de la operación. Los tipos autonómicos y municipales son editables: vienen precargados con los de Andalucía como referencia.</p>
+  </div>
+  <div class="tabs" id="tabs-fiscal">
+    <button class="tab active" data-sub="f-venta">Compraventa</button>
+    <button class="tab" data-sub="f-herencia">Herencia</button>
+    <button class="tab" data-sub="f-donacion">Donación</button>
+    <button class="tab" data-sub="f-divorcio">Divorcio / condominio</button>
+    <button class="tab" data-sub="f-plusvalia">Plusvalía municipal</button>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="subpanel active" id="f-venta">
+      <div class="card">
+        <h3>Datos de la compraventa</h3>
+        <div class="frow c3">
+          <div><label>Precio / valor de referencia (el mayor) €</label><input type="number" id="fv-valor" value="250000"></div>
+          <div><label>Tipo de inmueble</label>
+            <select id="fv-tipo">
+              <option value="usada">Vivienda usada (ITP)</option>
+              <option value="nueva">Vivienda nueva (IVA 10 % + AJD)</option>
+              <option value="local">Local / solar nuevo (IVA 21 % + AJD)</option>
+            </select>
+          </div>
+          <div><label>Tipo ITP (%) — Andalucía general: 7</label><input type="number" id="fv-itp" value="7" step="0.1"></div>
+        </div>
+        <div class="frow c3">
+          <div><label>Tipo AJD (%) — Andalucía: 1,2</label><input type="number" id="fv-ajd" value="1.2" step="0.1"></div>
+          <div><label>Notaría + registro + gestoría (estimación €)</label><input type="number" id="fv-ng" value="2000"></div>
+          <div><label>&nbsp;</label><p class="hint">La base imponible es el mayor entre el precio pactado y el valor de referencia catastral.</p></div>
+        </div>
+      </div>
+      <button class="btn" onclick="calcVenta()">Estimar costes del comprador</button>
+    </div>
+
+    <div class="subpanel" id="f-herencia">
+      <div class="card">
+        <h3>Datos de la sucesión (por heredero)</h3>
+        <div class="frow c3">
+          <div><label>Valor del inmueble (€)</label><input type="number" id="fh-valor" value="250000"></div>
+          <div><label>Cuota del heredero (%)</label><input type="number" id="fh-cuota" value="100"></div>
+          <div><label>Reducción por parentesco (€)</label><input type="number" id="fh-red" value="1000000"></div>
+        </div>
+        <div class="frow c3">
+          <div><label>Tipo medio estimado ISD (%)</label><input type="number" id="fh-tipo" value="15" step="0.5"></div>
+          <div><label>Bonificación en cuota (%)</label><input type="number" id="fh-bonif" value="99"></div>
+          <div><label>&nbsp;</label><p class="hint">Andalucía: reducción de 1.000.000 € y bonificación del 99 % en cuota para cónyuge, descendientes y ascendientes (grupos I y II). Otros grupos o CCAA: ajusta los valores.</p></div>
+        </div>
+      </div>
+      <button class="btn" onclick="calcHerencia()">Estimar ISD del heredero</button>
+      <div class="aviso"><b>No olvides.</b> El heredero paga además la plusvalía municipal (pestaña específica). La «plusvalía del muerto» no tributa en el IRPF del causante. Los excesos de adjudicación declarados entre herederos pueden tributar por TPO.</div>
+    </div>
+
+    <div class="subpanel" id="f-donacion">
+      <div class="card">
+        <h3>Impuesto de Donaciones (donatario)</h3>
+        <div class="frow c3">
+          <div><label>Valor del inmueble donado (€)</label><input type="number" id="fd-valor" value="250000"></div>
+          <div><label>Tipo medio estimado ISD (%)</label><input type="number" id="fd-tipo" value="15" step="0.5"></div>
+          <div><label>Bonificación en cuota (%)</label><input type="number" id="fd-bonif" value="99"></div>
+        </div>
+        <p class="hint">Andalucía bonifica el 99 % para grupos I y II si la donación se formaliza en escritura pública. En donaciones no existe la reducción general por parentesco de las herencias.</p>
+      </div>
+      <div class="card">
+        <h3>IRPF del donante (ganancia patrimonial)</h3>
+        <div class="frow c2">
+          <div><label>Valor de adquisición (€)</label><input type="number" id="fd-adq" value="120000"></div>
+          <div><label>&nbsp;</label><p class="hint">El donante tributa en IRPF como si vendiera: diferencia entre valor de donación y de adquisición, a la tarifa del ahorro. Las pérdidas no se computan.</p></div>
+        </div>
+      </div>
+      <button class="btn" onclick="calcDonacion()">Estimar carga fiscal total</button>
+    </div>
+
+    <div class="subpanel" id="f-divorcio">
+      <div class="card">
+        <h3>Extinción de condominio / liquidación de gananciales</h3>
+        <div class="frow c3">
+          <div><label>Valor total del inmueble (€)</label><input type="number" id="fx-valor" value="250000"></div>
+          <div><label>Cuota previa del adjudicatario (%)</label><input type="number" id="fx-cuota" value="50"></div>
+          <div><label>Tipo AJD (%) — Andalucía: 1,2</label><input type="number" id="fx-ajd" value="1.2" step="0.1"></div>
+        </div>
+        <p class="hint">Supuesto habitual: un cónyuge se adjudica el 100 % del bien indivisible y compensa al otro en metálico por su mitad.</p>
+      </div>
+      <button class="btn" onclick="calcDivorcio()">Estimar costes de la adjudicación</button>
+      <div class="aviso"><b>Ventajas fiscales del supuesto.</b> Si la adjudicación es proporcional o el bien es indivisible con compensación en metálico: <b>no hay TPO</b> (no es compraventa), solo AJD si se documenta en escritura pública; <b>no se devenga plusvalía municipal</b> en las transmisiones entre cónyuges por nulidad, separación o divorcio (art. 104 TRLRHL); y en IRPF no hay ganancia si no se actualizan valores. Los excesos de adjudicación no compensados o evitables sí tributan.</div>
+    </div>
+
+    <div class="subpanel" id="f-plusvalia">
+      <div class="card">
+        <h3>IIVTNU — doble cálculo (RD-ley 26/2021)</h3>
+        <div class="frow c3">
+          <div><label>Municipio (provincia de Málaga)</label>
+            <select id="fp-muni"></select>
+          </div>
+          <div><label>Años completos de tenencia</label>
+            <select id="fp-anos"></select>
+          </div>
+          <div><label>&nbsp;</label><p class="hint" id="fp-muni-nota">Al elegir municipio y años se rellenan tipo y coeficiente automáticamente.</p></div>
+        </div>
+        <div class="frow c3">
+          <div><label>Valor catastral del suelo (€)</label><input type="number" id="fp-vcs" value="40000"></div>
+          <div><label>Valor catastral total (€)</label><input type="number" id="fp-vct" value="95000"></div>
+          <div><label>Coeficiente por años de tenencia (ordenanza)</label><input type="number" id="fp-coef" value="0.16" step="0.01"></div>
+        </div>
+        <div class="frow c4">
+          <div><label>Precio de adquisición (€)</label><input type="number" id="fp-pa" value="150000"></div>
+          <div><label>Precio de transmisión (€)</label><input type="number" id="fp-pt" value="250000"></div>
+          <div><label>Tipo de gravamen (%) máx. 30</label><input type="number" id="fp-tipo" value="30" max="30"></div>
+          <div><label>&nbsp;</label><p class="hint">El coeficiente lo fija cada ayuntamiento dentro de los máximos que se actualizan anualmente: consulta la ordenanza.</p></div>
+        </div>
+      </div>
+      <button class="btn" onclick="calcPlusvalia()">Calcular por ambos métodos</button>
+      <div class="aviso"><b>Regla clave.</b> Se aplica el método más favorable al contribuyente. Si no hay incremento real de valor, la operación <b>no está sujeta</b>: hay que declararlo y acreditarlo con las escrituras.</div>
+    </div>
+  </div>
+  <div><div class="ficha" id="ficha-fiscal">
+    <div class="ficha-top"><div class="eyebrow">Estimación fiscal</div><h4>Resumen de la operación</h4></div>
+    <div class="ficha-body"><p class="vacio">Selecciona el supuesto, revisa los tipos y pulsa el botón de cálculo.</p></div>
+  </div></div>
+  </div>
+  <div class="aviso" style="margin-top:14px"><b>Importante.</b> Estimaciones orientativas para informar al cliente en agencia. Tipos, reducciones y bonificaciones son competencia autonómica y municipal y cambian con frecuencia: verifica la normativa vigente antes de dar cifras cerradas y deriva la liquidación a asesor fiscal, notaría o gestoría.</div>
+</section>
+
+<!-- ==================== MACROENTORNO ==================== -->
+<section class="panel" id="p-macro">
+  <div class="panel-head">
+    <div class="eyebrow">Análisis externo · PESTEL</div>
+    <h2>Checklist de macroentorno</h2>
+    <p>Repasa los factores externos que condicionan el mercado de tu zona antes de fijar estrategia de captación y precios. Marca lo analizado.</p>
+  </div>
+  <div class="card">
+    <div class="progress"><div id="prog-macro"></div></div>
+    <div id="list-macro"></div>
+  </div>
+</section>
+
+<!-- ==================== DAFO + CAME ==================== -->
+<section class="panel" id="p-dafo">
+  <div class="panel-head">
+    <div class="eyebrow">Diagnóstico estratégico</div>
+    <h2>DAFO y plan CAME</h2>
+    <p>Anota el diagnóstico de la agencia (o de un inmueble concreto) y define la respuesta: Corregir debilidades, Afrontar amenazas, Mantener fortalezas y Explotar oportunidades.</p>
+  </div>
+  <div class="card">
+    <h3>Matriz DAFO — análisis interno y externo</h3>
+    <div class="dafo-grid">
+      <div class="dafo-box d-D"><h4>Debilidades (interno)</h4><textarea id="dafo-D" placeholder="Poca cartera en exclusiva, marca poco conocida, dependencia de un solo portal…"></textarea></div>
+      <div class="dafo-box d-A"><h4>Amenazas (externo)</h4><textarea id="dafo-A" placeholder="Subida de tipos, nueva competencia low-cost, cambios normativos en alquiler…"></textarea></div>
+      <div class="dafo-box d-F"><h4>Fortalezas (interno)</h4><textarea id="dafo-F" placeholder="Conocimiento de la zona, base de datos de compradores, equipo comercial…"></textarea></div>
+      <div class="dafo-box d-O"><h4>Oportunidades (externo)</h4><textarea id="dafo-O" placeholder="Demanda extranjera, obra nueva en la zona, digitalización lenta de la competencia…"></textarea></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Plan CAME — del diagnóstico a la acción</h3>
+    <div class="dafo-grid">
+      <div class="dafo-box d-D"><span class="came-tag">Corregir</span><h4>…las debilidades</h4><textarea id="came-C" placeholder="Acción, responsable y plazo para cada debilidad"></textarea></div>
+      <div class="dafo-box d-A"><span class="came-tag">Afrontar</span><h4>…las amenazas</h4><textarea id="came-A" placeholder="Plan de contingencia para cada amenaza"></textarea></div>
+      <div class="dafo-box d-F"><span class="came-tag">Mantener</span><h4>…las fortalezas</h4><textarea id="came-M" placeholder="Cómo consolidar lo que ya funciona"></textarea></div>
+      <div class="dafo-box d-O"><span class="came-tag">Explotar</span><h4>…las oportunidades</h4><textarea id="came-E" placeholder="Iniciativas concretas para aprovecharlas"></textarea></div>
+    </div>
+    <p class="hint" style="margin-top:10px">Consejo: cruza cuadrantes. Fortaleza + Oportunidad = estrategia ofensiva; Debilidad + Amenaza = supervivencia; Fortaleza + Amenaza = defensiva; Debilidad + Oportunidad = reorientación.</p>
+  </div>
+</section>
+
+<!-- ==================== MARKETING ==================== -->
+<section class="panel" id="p-mkt">
+  <div class="panel-head">
+    <div class="eyebrow">Plan comercial del inmueble</div>
+    <h2>Checklist de marketing inmobiliario</h2>
+    <p>Recorrido completo desde la captación hasta la posventa. Úsalo como guion de calidad para cada encargo de venta.</p>
+  </div>
+  <div class="card">
+    <div class="progress"><div id="prog-mkt"></div></div>
+    <div id="list-mkt"></div>
+  </div>
+</section>
+
+<!-- ==================== ALQUILER · RENTA ÓPTIMA ==================== -->
+<section class="panel" id="p-alquiler">
+  <div class="panel-head">
+    <div class="eyebrow">Comparación de rentas + simulación de vacancia</div>
+    <h2>Precio óptimo de alquiler</h2>
+    <p>Calcula la renta de mercado con testigos de alquiler homogeneizados y simula el posicionamiento: la renta óptima no es la más alta, sino la que maximiza el ingreso anual una vez descontado el tiempo que la vivienda estará vacía.</p>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="card">
+      <h3>Vivienda a alquilar</h3>
+      <div class="frow c4">
+        <div><label>Superficie (m²)</label><input type="number" id="al-sup" value="80"></div>
+        <div><label>Gastos fijos del propietario (€/mes)</label><input type="number" id="al-gastos" value="130"></div>
+        <div><label>Valor del inmueble (€, opcional)</label><input type="number" id="al-valor" value="240000"></div>
+        <div><label>¿Zona de mercado tensionado?</label>
+          <select id="al-zona"><option value="no">No / sin declarar</option><option value="si">Sí, declarada</option></select>
+        </div>
+      </div>
+      <p class="hint">Gastos fijos: comunidad, IBI y seguro prorrateados al mes. Si la zona está declarada tensionada (Ley 12/2023), la renta puede estar limitada por el contrato anterior o por el índice estatal de referencia: consúltalo por dirección exacta en el <a href="https://serpavi.mivau.gob.es" target="_blank" rel="noopener"><b>SERPAVI</b> (Sistema Estatal de Referencia del Precio del Alquiler)</a> antes de publicar.</p>
+    </div>
+    <div class="card">
+      <h3>Testigos de alquiler y coeficientes</h3>
+      <p class="hint" style="margin-bottom:10px">Usa los botones − / + para ajustar cada coeficiente en saltos de 0,05: verde si tu vivienda es mejor que el testigo en esa variable, rojo si es peor. Pulsa los títulos de las columnas para ver la guía.</p>
+      <div style="overflow-x:auto">
+      <table class="testigos" id="tbl-alq">
+        <thead><tr><th>Testigo</th><th>Renta €/mes</th><th>Sup. m²</th><th>C. situación</th><th>C. estado</th><th>C. extras</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <button class="btn ghost" onclick="addRowAlq()">+ Añadir testigo</button>
+    </div>
+    <button class="btn" onclick="calcAlq()">Calcular renta de mercado</button>
+
+    <div class="card" id="al-simcard" style="margin-top:18px;display:none">
+      <h3>Simulador de posicionamiento</h3>
+      <div class="wrow" style="grid-template-columns:1fr">
+        <div><label>Posicionamiento sobre mercado <b class="wv" id="al-devv">0 %</b></label>
+        <input type="range" id="al-dev" min="-12" max="12" value="0" step="1" oninput="simAlq()"></div>
+      </div>
+      <div style="overflow-x:auto"><table class="testigos" id="al-out"><thead><tr><th>Posición</th><th>Renta €/mes</th><th>Vacancia estimada</th><th>Ingreso neto anual</th></tr></thead><tbody></tbody></table></div>
+      <p class="hint">Modelo orientativo: en mercado equilibrado, publicar al precio de mercado supone ~2 semanas de vacancia; cada punto por encima añade tiempo de espera (y riesgo de «quemar» el anuncio), y bajar apenas acelera a partir de cierto punto. La fila destacada es el óptimo económico.</p>
+    </div>
+  </div>
+  <div><div class="ficha" id="ficha-alquiler">
+    <div class="ficha-top"><div class="eyebrow">Ficha de cálculo</div><h4>Renta de alquiler</h4></div>
+    <div class="ficha-body"><p class="vacio">Introduce testigos y pulsa «Calcular renta de mercado».</p></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ==================== SIMULADOR DE ESCENARIOS ==================== -->
+<section class="panel" id="p-simulador">
+  <div class="panel-head">
+    <div class="eyebrow">Estrategia de precio y operaciones especiales</div>
+    <h2>Simulador de escenarios</h2>
+    <p>Cuatro simuladores para la mesa de negociación: venta con escenarios de precio, alquiler con opción a compra, permuta y venta de nuda propiedad con reserva de usufructo.</p>
+  </div>
+  <div class="tabs" id="tabs-sim">
+    <button class="tab active" data-sub="sim-venta">Venta · escenarios</button>
+    <button class="tab" data-sub="sim-aco">Alquiler con opción a compra</button>
+    <button class="tab" data-sub="sim-permuta">Permuta</button>
+    <button class="tab" data-sub="sim-nuda">Nuda propiedad / usufructo</button>
+  </div>
+  <div class="grid2">
+  <div>
+    <div class="subpanel active" id="sim-venta">
+      <div class="card">
+        <h3>Parámetros del escenario</h3>
+        <div class="frow c3">
+          <div><label>Valor de mercado base (€)</label><input type="number" id="sim-base" value="250000"></div>
+          <div><label>Escenario pesimista (ajuste %)</label><input type="number" id="sim-pes" value="-8"></div>
+          <div><label>Escenario optimista (ajuste %)</label><input type="number" id="sim-opt" value="5"></div>
+        </div>
+        <div class="frow c3">
+          <div><label>Margen de negociación en salida (%)</label><input type="number" id="sim-neg" value="5"></div>
+          <div><label>Honorarios de agencia (% + IVA)</label><input type="number" id="sim-hon" value="4" step="0.5"></div>
+          <div><label>Situación del vendedor</label>
+            <select id="sim-urg">
+              <option value="0">Sin prisa (maximizar precio)</option>
+              <option value="-3">Venta en 3–6 meses</option>
+              <option value="-6">Venta urgente (&lt;3 meses)</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">El margen de negociación se suma al valor para fijar el precio de salida; la urgencia lo reduce. El plazo estimado es orientativo según la desviación del precio sobre mercado.</p>
+      </div>
+      <button class="btn" onclick="calcSim()">Simular escenarios</button>
+      <div class="card" id="sim-tabla" style="margin-top:18px;display:none">
+        <h3>Comparativa de escenarios</h3>
+        <div style="overflow-x:auto"><table class="testigos" id="sim-out"><thead><tr><th>Escenario</th><th>Valor</th><th>Precio salida</th><th>Cierre esperado</th><th>Honorarios (c/IVA)</th><th>Neto vendedor</th><th>Plazo estimado</th></tr></thead><tbody></tbody></table></div>
+        <p class="hint">Úsalo en la captación: enseñar los tres escenarios al propietario ayuda a pactar un precio de salida realista y el plan de bajadas a 30/60/90 días.</p>
+      </div>
+    </div>
+
+    <div class="subpanel" id="sim-aco">
+      <div class="card">
+        <h3>Condiciones del alquiler con opción a compra</h3>
+        <div class="frow c3">
+          <div><label>Precio de compra pactado (€)</label><input type="number" id="aco-precio" value="250000"></div>
+          <div><label>Prima inicial de la opción (€)</label><input type="number" id="aco-prima" value="12000"></div>
+          <div><label>Plazo de la opción (meses)</label><input type="number" id="aco-plazo" value="36"></div>
+        </div>
+        <div class="frow c3">
+          <div><label>Renta mensual (€)</label><input type="number" id="aco-renta" value="1100"></div>
+          <div><label>% de la renta que descuenta del precio</label><input type="number" id="aco-pct" value="50"></div>
+          <div><label>¿La prima descuenta del precio?</label>
+            <select id="aco-primadesc"><option value="1">Sí, al 100 %</option><option value="0.5">Sí, al 50 %</option><option value="0">No descuenta</option></select>
+          </div>
+        </div>
+        <p class="hint">Pon siempre por escrito: precio cerrado, plazo, prima, % de rentas que descuentan y qué pasa con todo ello si el inquilino no ejerce (lo habitual: prima y rentas se pierden como compensación).</p>
+      </div>
+      <button class="btn" onclick="calcACO()">Calcular la operación</button>
+    </div>
+
+    <div class="subpanel" id="sim-permuta">
+      <div class="card">
+        <h3>Permuta de inmuebles</h3>
+        <div class="frow c3">
+          <div><label>Valor del inmueble que ENTREGA tu cliente (€)</label><input type="number" id="pm-a" value="200000"></div>
+          <div><label>Valor del inmueble que RECIBE (€)</label><input type="number" id="pm-b" value="260000"></div>
+          <div><label>Tipo ITP aplicable (%)</label><input type="number" id="pm-itp" value="7" step="0.1"></div>
+        </div>
+        <div class="frow c2">
+          <div><label>Valor de adquisición del inmueble entregado (€)</label><input type="number" id="pm-adq" value="120000"></div>
+          <div><label>&nbsp;</label><p class="hint">Sirve para estimar la ganancia en IRPF de tu cliente: en la permuta también se tributa como si se vendiera lo entregado.</p></div>
+        </div>
+      </div>
+      <button class="btn" onclick="calcPermuta()">Calcular la permuta</button>
+    </div>
+
+    <div class="subpanel" id="sim-nuda">
+      <div class="card">
+        <h3>Nuda propiedad y usufructo</h3>
+        <div class="frow c3">
+          <div><label>Valor del pleno dominio (€)</label><input type="number" id="np-valor" value="250000"></div>
+          <div><label>Tipo de usufructo</label>
+            <select id="np-tipo" onchange="$('np-edad-w').style.display=this.value==='vit'?'block':'none';$('np-anos-w').style.display=this.value==='vit'?'none':'block'">
+              <option value="vit">Vitalicio (regla 89 − edad)</option>
+              <option value="temp">Temporal (2 % por año)</option>
+            </select>
+          </div>
+          <div id="np-edad-w"><label>Edad del usufructuario (años)</label><input type="number" id="np-edad" value="75"></div>
+        </div>
+        <div class="frow c2" id="np-anos-w" style="display:none">
+          <div><label>Duración del usufructo (años)</label><input type="number" id="np-anos" value="10"></div>
+        </div>
+        <p class="hint">Regla fiscal (art. 10.2.a LITPAJD): usufructo vitalicio = 89 − edad, con mínimo del 10 % y máximo del 70 %. Temporal: 2 % por año, máximo 70 %. La nuda propiedad es el resto hasta 100.</p>
+      </div>
+      <button class="btn" onclick="calcNuda()">Calcular valores</button>
+    </div>
+  </div>
+  <div><div class="ficha" id="ficha-sim">
+    <div class="ficha-top"><div class="eyebrow">Recomendación</div><h4>Estrategia de salida</h4></div>
+    <div class="ficha-body"><p class="vacio">Elige el supuesto, introduce los datos y pulsa el botón de cálculo.</p></div>
+  </div></div>
+  </div>
+</section>
+
+<!-- ==================== GUÍA ARRAS → REGISTRO ==================== -->
+<section class="panel" id="p-guia">
+  <div class="panel-head">
+    <div class="eyebrow">Guía interactiva del expediente</div>
+    <h2>De las arras al Registro de la Propiedad</h2>
+    <p>Todos los pasos de una compraventa con sus plazos y modelos oficiales. Marca cada paso completado y despliega el detalle pulsando sobre el título.</p>
+  </div>
+  <div class="card">
+    <div class="progress"><div id="prog-guia"></div></div>
+    <div id="list-guia"></div>
+  </div>
+  <div class="aviso"><b>Recuerda.</b> La inscripción en el Registro es voluntaria (salvo la hipoteca, que es constitutiva), pero imprescindible en la práctica: sin inscribir no hay protección frente a terceros ni podrá hipotecar el comprador. El asiento de presentación caduca a los 60 días.</div>
+</section>
+
+<!-- ==================== HIPOTECA Y EJECUCIÓN ==================== -->
+<section class="panel" id="p-hipoteca">
+  <div class="panel-head">
+    <div class="eyebrow">Procedimientos especiales</div>
+    <h2>Cancelación de hipoteca y ejecución</h2>
+    <p>Dos itinerarios interactivos: cómo limpiar registralmente una hipoteca ya pagada y cómo transcurre una ejecución hipotecaria o de sentencia hasta la subasta y adjudicación.</p>
+  </div>
+  <div class="tabs" id="tabs-hipo">
+    <button class="tab active" data-sub="h-cancel">Cancelación de hipoteca</button>
+    <button class="tab" data-sub="h-ejec">Ejecución hipotecaria / de sentencia</button>
+  </div>
+  <div class="subpanel active" id="h-cancel">
+    <div class="card">
+      <div class="progress"><div id="prog-cancel"></div></div>
+      <div id="list-cancel"></div>
+    </div>
+    <div class="aviso"><b>Clave comercial.</b> «Cancelación económica» (deuda pagada) no es «cancelación registral» (carga borrada). Muchísimas ventas se retrasan por hipotecas pagadas hace años que siguen inscritas: revísalo en la nota simple en el momento de la captación.</div>
+  </div>
+  <div class="subpanel" id="h-ejec">
+    <div class="card">
+      <div class="progress"><div id="prog-ejec"></div></div>
+      <div id="list-ejec"></div>
+    </div>
+    <div class="aviso"><b>Ámbito.</b> Esquema orientativo del procedimiento de la Ley de Enjuiciamiento Civil para entender los tiempos y oportunidades (compra en subasta, negociación con el ejecutado, dación). La dirección técnica corresponde siempre a abogado y procurador.</div>
+  </div>
+</section>
+
+<!-- ==================== NORMATIVA ==================== -->
+<section class="panel" id="p-normas">
+  <div class="panel-head">
+    <div class="eyebrow">Consulta directa en el BOE (texto consolidado)</div>
+    <h2>Normativa de referencia</h2>
+    <p>Acceso a la versión consolidada y vigente de cada norma en la web oficial del Boletín Oficial del Estado. Consulta siempre el texto consolidado: incorpora todas las modificaciones.</p>
+  </div>
+  <div class="card"><div id="list-normas"></div></div>
+  <div class="card">
+    <h3>Buscadores oficiales</h3>
+    <div class="norm-item"><div><div class="nm">Buscador de legislación del BOE</div><div class="nd">Cualquier norma estatal o autonómica por título, número o materia</div></div><a href="https://www.boe.es/buscar/legislacion.php" target="_blank" rel="noopener">Abrir</a></div>
+    <div class="norm-item"><div><div class="nm">Sede Electrónica del Catastro</div><div class="nd">Consulta catastral, valor de referencia y modelo 900D</div></div><a href="https://www.sedecatastro.gob.es" target="_blank" rel="noopener">Abrir</a></div>
+    <div class="norm-item"><div><div class="nm">Registradores de España</div><div class="nd">Nota simple, información registral y presentación telemática</div></div><a href="https://www.registradores.org" target="_blank" rel="noopener">Abrir</a></div>
+    <div class="norm-item"><div><div class="nm">Agencia Tributaria de Andalucía</div><div class="nd">Modelos 600, 650 y 651, tipos vigentes y plataforma de pago</div></div><a href="https://www.juntadeandalucia.es/agenciatributariadeandalucia" target="_blank" rel="noopener">Abrir</a></div>
+    <div class="norm-item"><div><div class="nm">SERPAVI — Índice de referencia del alquiler</div><div class="nd">Rango oficial de renta por vivienda concreta; base de los límites en zonas tensionadas</div></div><a href="https://serpavi.mivau.gob.es" target="_blank" rel="noopener">Abrir</a></div>
+    <div class="norm-item"><div><div class="nm">Portal de Subastas del BOE</div><div class="nd">Subastas judiciales y notariales electrónicas</div></div><a href="https://subastas.boe.es" target="_blank" rel="noopener">Abrir</a></div>
+  </div>
+</section>
+
+<!-- ==================== BIBLIOTECA DE FÓRMULAS ==================== -->
+<section class="panel" id="p-formulas">
+  <div class="panel-head">
+    <div class="eyebrow">Referencia rápida</div>
+    <h2>Biblioteca de fórmulas</h2>
+    <p>Todas las fórmulas que usa la aplicación, con su significado y la norma o sistema del que proceden. Pulsa cualquiera para abrir la explicación completa con ejemplos.</p>
+  </div>
+  <div class="card"><div id="list-formulas"></div></div>
+</section>
+
+</main>
+</div>
+<!-- Modal de ayuda -->
+<div class="overlay" id="info-overlay" onclick="if(event.target===this)closeInfo()">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head"><h4 id="info-title">Ayuda</h4><button class="modal-close" onclick="closeInfo()" aria-label="Cerrar">✕</button></div>
+    <div class="modal-body" id="info-body"></div>
+  </div>
+</div>
+<!-- Confirmación de informe -->
+<div class="overlay" id="ask-overlay">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-head"><h4>Generar informe</h4><button class="modal-close" onclick="$('ask-overlay').classList.remove('open')" aria-label="Cerrar">✕</button></div>
+    <div class="modal-body">
+      <p id="ask-text">¿Quieres que elabore ahora el informe con los datos introducidos?</p>
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button class="btn" id="ask-yes">Sí, generar informe</button>
+        <button class="btn ghost" onclick="$('ask-overlay').classList.remove('open')">Todavía no</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Visor de informe -->
+<div class="overlay" id="report-view" onclick="if(event.target===this)closeReport()">
+  <div class="modal">
+    <div class="modal-head"><h4>Informe generado</h4><button class="modal-close" onclick="closeReport()" aria-label="Cerrar">✕</button></div>
+    <div class="modal-body">
+      <div class="rep-actions" style="display:flex;gap:10px;margin-bottom:14px">
+        <button class="btn small" onclick="printReport()">Imprimir / guardar PDF</button>
+        <button class="btn ghost small" onclick="downloadReport()">Descargar .html</button>
+      </div>
+      <div class="rep-doc" id="report-body"></div>
+    </div>
+  </div>
+</div>
+
+<button class="btn print-btn" onclick="window.print()">Imprimir / PDF</button>
+<button class="homi-fab" onclick="$('homi-panel').classList.toggle('open')">🏠 Homi · asesor</button>
+<div class="homi-panel" id="homi-panel" role="dialog" aria-label="Asesor Homi">
+  <div class="homi-head"><div><b>Homi</b><small>Asesor de valoración y fiscalidad inmobiliaria</small></div>
+  <button class="modal-close" onclick="$('homi-panel').classList.remove('open')" aria-label="Cerrar">✕</button></div>
+  <div class="homi-msgs" id="homi-msgs">
+    <div class="homi-b bot">¡Hola! Soy <b>Homi</b> 🏠. Pregúntame lo que quieras sobre valoración, testigos, coeficientes, impuestos de una compra, herencia, donación, divorcio, plusvalía, alquiler… Respondo con la normativa de la app y te digo dónde comprobar cada dato.</div>
+  </div>
+  <div class="homi-chips">
+    <button class="chip" onclick="homiAsk(this.textContent)">¿Qué coeficiente uso si mi piso está reformado?</button>
+    <button class="chip" onclick="homiAsk(this.textContent)">¿Qué paga el que hereda una casa?</button>
+    <button class="chip" onclick="homiAsk(this.textContent)">¿Cómo se calcula la plusvalía?</button>
+  </div>
+  <div class="homi-in">
+    <input id="homi-q" placeholder="Escribe tu duda…" onkeydown="if(event.key==='Enter')homiSend()">
+    <button onclick="homiSend()">Enviar</button>
+  </div>
+</div>
+<script>
+/* ================= Utilidades ================= */
+const fmtE = new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+const fmtE2 = new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtN = new Intl.NumberFormat('es-ES',{maximumFractionDigits:2});
+const $ = id => document.getElementById(id);
+const num = id => { const v = parseFloat($(id).value); return isNaN(v)?0:v; };
+
+function ficha(id, titulo, lineas, totalLbl, totalVal, sub, norma){
+  const body = lineas.map(l=>`<div class="linea"><span>${l[0]}</span><strong class="num">${l[1]}</strong></div>`).join('');
+  $(id).querySelector('.ficha-body').innerHTML =
+    body +
+    `<div class="total"><div class="lbl">${totalLbl}</div><div class="val">${totalVal}</div>${sub?`<div class="sub">${sub}</div>`:''}</div>` +
+    (norma?`<div class="norma" style="padding:12px 0 0">${norma}</div>`:'');
+  const h4=$(id).querySelector('.ficha-top h4'); if(titulo) h4.textContent=titulo;
+}
+
+/* ================= Navegación ================= */
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); $(b.dataset.panel).classList.add('active');
+  window.scrollTo({top:0});
+}));
+function bindTabs(containerId){
+  document.querySelectorAll('#'+containerId+' .tab').forEach(t=>t.addEventListener('click',()=>{
+    const cont=$(containerId);
+    cont.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const panel=cont.closest('.panel');
+    panel.querySelectorAll('.subpanel').forEach(x=>x.classList.remove('active'));
+    $(t.dataset.sub).classList.add('active');
+  }));
+}
+bindTabs('tabs-local'); bindTabs('tabs-fiscal');
+
+/* ================= Filas dinámicas ================= */
+function rowHTML(cells){ return '<tr>'+cells.map(c=>`<td>${c}</td>`).join('')+`<td><button class="del" title="Eliminar" onclick="this.closest('tr').remove()">✕</button></td></tr>`; }
+function inp(v,step){ return `<input type="number" value="${v}" ${step?`step="${step}"`:''}>`; }
+let nH=0,nP=0,nT=0,nV=0;
+function addRowHomog(p=380000,s=200,c1=1,c2=1,c3=1,c4=1){ nH++;
+  $('tbl-homog').tBodies[0].insertAdjacentHTML('beforeend', rowHTML([`T${nH}`,inp(p),inp(s),inp(c1,.05),inp(c2,.05),inp(c3,.05),inp(c4,.05)])); }
+function addRowPond(p=1900,a=7,b=7,c=7,d=7){ nP++;
+  $('tbl-pond').tBodies[0].insertAdjacentHTML('beforeend', rowHTML([`T${nP}`,inp(p),inp(a),inp(b),inp(c),inp(d)])); }
+function addRowTF(p=1850,ctf=89.44,w=20){ nT++;
+  $('tbl-tf').tBodies[0].insertAdjacentHTML('beforeend', rowHTML([`T${nT}`,inp(p),inp(ctf,.01),inp(w)])); }
+function addRowViv(p=210000,s=85,c1=1,c2=1,c3=1,c4=1){ nV++;
+  $('tbl-viv').tBodies[0].insertAdjacentHTML('beforeend', rowHTML([`T${nV}`,inp(p),inp(s),inp(c1,.05),inp(c2,.05),inp(c3,.05),inp(c4,.05)])); }
+function readRows(tblId){
+  return [...$(tblId).tBodies[0].rows].map(r=>[...r.querySelectorAll('input')].map(i=>parseFloat(i.value)||0));
+}
+/* filas de ejemplo iniciales */
+addRowHomog(390000,210,1,1.05,1,1); addRowHomog(345000,180,0.95,1,1.05,1); addRowHomog(420000,230,1,0.95,0.95,1);
+addRowPond(1850,8,6,7,7); addRowPond(2300,9,8,9,8); addRowPond(1720,7,7,6,7);
+addRowTF(1850,89.44,22); addRowTF(2300,98.33,26); addRowTF(1100,78.75,14); addRowTF(1720,87.86,22); addRowTF(1350,81.67,16);
+addRowViv(215000,88,1,1,1,1); addRowViv(198000,82,1.05,1,0.95,1); addRowViv(232000,95,0.95,1.05,1,1);
+
+/* ================= Local comercial ================= */
+function calcHomog(){
+  const rows=readRows('tbl-homog'); if(!rows.length) return;
+  const sup=num('h-sup'), of=num('h-oferta')||1;
+  const unit=rows.map(r=>{ const [p,s,c1,c2,c3,c4]=r; return s? (p/s)*c1*c2*c3*c4 : 0; }).filter(v=>v>0);
+  if(!unit.length) return;
+  const media=unit.reduce((a,b)=>a+b,0)/unit.length;
+  const vm2=media*of, total=vm2*sup;
+  ficha('ficha-local','Local · homogeneización',[
+    ['Testigos válidos', unit.length],
+    ['€/m² homogeneizado medio', fmtE2.format(media)],
+    ['Corrector de oferta', fmtN.format(of)],
+    ['€/m² adoptado', fmtE2.format(vm2)],
+    ['Superficie', fmtN.format(sup)+' m²'],
+  ],'Valor estimado del local',fmtE.format(total),fmtE2.format(vm2)+' /m²','Método de comparación con homogeneización por coeficientes correctores (Orden ECO/805/2003).');
+}
+function calcPond(){
+  const rows=readRows('tbl-pond'); if(!rows.length) return;
+  const w=[num('pd-w1'),num('pd-w2'),num('pd-w3'),num('pd-w4')].map(x=>x/100);
+  const sw=w.reduce((a,b)=>a+b,0);
+  const so=[num('pd-o1'),num('pd-o2'),num('pd-o3'),num('pd-o4')];
+  const scoreObj=so.reduce((a,v,i)=>a+v*w[i],0);
+  const unit=rows.map(r=>{ const [p,a,b,c,d]=r; const st=[a,b,c,d].reduce((x,v,i)=>x+v*w[i],0); return st? p*scoreObj/st : 0; }).filter(v=>v>0);
+  if(!unit.length) return;
+  const media=unit.reduce((a,b)=>a+b,0)/unit.length;
+  const total=media*num('pd-sup');
+  ficha('ficha-local','Local · ponderación',[
+    ['Suma de pesos', fmtN.format(sw*100)+' %'+(Math.abs(sw-1)>0.001?' ⚠ debe sumar 100':' ✓')],
+    ['Puntuación del local a valorar', fmtN.format(scoreObj)],
+    ['€/m² ajustado medio', fmtE2.format(media)],
+    ['Superficie', fmtN.format(num('pd-sup'))+' m²'],
+  ],'Valor estimado del local',fmtE.format(total),fmtE2.format(media)+' /m²','Sistema de ponderación: el precio unitario de cada testigo se ajusta por la relación entre puntuaciones ponderadas.');
+}
+function calcTF(){
+  const rows=readRows('tbl-tf'); if(!rows.length) return;
+  const grid=$('tf-grid').value.split(',').map(x=>parseFloat(x.trim())).filter(x=>!isNaN(x));
+  if(!grid.length) return;
+  const ctfObj=grid.reduce((a,b)=>a+b,0)/grid.length;
+  let sumW=0, v1c=0;
+  rows.forEach(r=>{ const [p,ctf,w]=r; if(ctf>0){ v1c += (p*100/ctf)*(w/100); sumW+=w; } });
+  const vm2=v1c*ctfObj/100, total=vm2*num('tf-sup');
+  ficha('ficha-local','Local · tabla de fondo',[
+    ['Suma ponderaciones', fmtN.format(sumW)+' %'+(Math.abs(sumW-100)>0.5?' ⚠ debe sumar 100':' ✓')],
+    ['Valor 1ª crujía (local a valorar)', fmtE2.format(v1c)],
+    ['C.T.F. del local a valorar', fmtN.format(ctfObj)],
+    ['€/m² medio resultante', fmtE2.format(vm2)],
+    ['Superficie', fmtN.format(num('tf-sup'))+' m²'],
+  ],'Valor estimado del local',fmtE.format(total),fmtE2.format(vm2)+' /m²','Coeficiente de tabla de fondo: la banda de escaparate vale más que el fondo del local.');
+}
+function calcClasico(){
+  const arr=$('cl-precios').value.split(',').map(x=>parseFloat(x.trim())).filter(x=>!isNaN(x)&&x>0);
+  if(!arr.length) return;
+  const media=arr.reduce((a,b)=>a+b,0)/arr.length, total=media*num('cl-sup');
+  ficha('ficha-local','Local · sistema clásico',[
+    ['Testigos', arr.length],
+    ['€/m² mínimo · máximo', fmtN.format(Math.min(...arr))+' · '+fmtN.format(Math.max(...arr))],
+    ['€/m² medio', fmtE2.format(media)],
+    ['Superficie', fmtN.format(num('cl-sup'))+' m²'],
+  ],'Valor estimado del local',fmtE.format(total),fmtE2.format(media)+' /m²','Media aritmética de repercusiones. Solo orientativo: no corrige diferencias entre testigos.');
+}
+
+/* ================= Vivienda ================= */
+function calcViv(){
+  const rows=readRows('tbl-viv'); if(!rows.length) return;
+  const of=num('v-oferta')||1, sup=num('v-sup');
+  const unit=rows.map(r=>{ const [p,s,c1,c2,c3,c4]=r; return s? (p/s)*c1*c2*c3*c4 : 0; }).filter(v=>v>0);
+  if(!unit.length) return;
+  const media=unit.reduce((a,b)=>a+b,0)/unit.length;
+  const vm2=media*of;
+  let nota='Valor de mercado por comparación (Orden ECO/805/2003).';
+  if($('v-fin').value==='hipo'){ nota='Orientación de valor hipotecario: valor prudente, sin elementos especulativos. La cifra oficial la fija la sociedad de tasación homologada.'; }
+  const total=vm2*sup;
+  ficha('ficha-viv','Vivienda · comparación',[
+    ['Testigos válidos', unit.length + (unit.length<6?' ⚠ mín. recomendado 6':' ✓')],
+    ['€/m² homogeneizado medio', fmtE2.format(media)],
+    ['Corrector de oferta', fmtN.format(of)],
+    ['€/m² adoptado', fmtE2.format(vm2)],
+    ['Superficie construida', fmtN.format(sup)+' m²'],
+  ],'Valor estimado de la vivienda',fmtE.format(total),fmtE2.format(vm2)+' /m²',nota);
+}
+
+/* ================= Coste de reposición ================= */
+function calcCoste(){
+  const suelo=num('cr-suelo'), sup=num('cr-sup'), cc=num('cr-cc')*sup;
+  const gastos=cc*num('cr-gastos')/100;
+  const vrb=suelo+cc+gastos;
+  const vu=num('cr-vu'), ant=Math.min(num('cr-ant'),vu);
+  const depF=(cc+gastos)*(vu? ant/vu : 0);
+  const vrn=Math.max(0, vrb-depF-num('cr-func'));
+  ficha('ficha-coste','Coste de reposición',[
+    ['Valor del suelo', fmtE.format(suelo)],
+    ['Coste de construcción', fmtE.format(cc)],
+    ['Gastos necesarios', fmtE.format(gastos)],
+    ['Valor de reposición bruto (VRB)', fmtE.format(vrb)],
+    ['Depreciación física ('+fmtN.format(ant)+'/'+fmtN.format(vu)+' años)', '−'+fmtE.format(depF)],
+    ['Depreciación funcional', '−'+fmtE.format(num('cr-func'))],
+  ],'Valor de reposición neto (VRN)',fmtE.format(vrn),fmtE2.format(sup?vrn/sup:0)+' /m²','Amortización lineal sobre construcción y gastos; el suelo no se deprecia (Orden ECO/805/2003).');
+}
+
+/* ================= Residual solar ================= */
+function calcResidual(){
+  const edif=num('rs-edif'), vm=num('rs-vm')*edif, b=num('rs-b')/100;
+  const cc=num('rs-cc')*edif, g=cc*num('rs-g')/100;
+  const F=vm*(1-b)-(cc+g);
+  ficha('ficha-solar','Solar · residual estático',[
+    ['Valor de mercado terminado (VM)', fmtE.format(vm)],
+    ['Margen del promotor b', fmtN.format(b*100)+' %'],
+    ['VM × (1 − b)', fmtE.format(vm*(1-b))],
+    ['Coste de construcción', '−'+fmtE.format(cc)],
+    ['Gastos de promoción', '−'+fmtE.format(g)],
+  ],'Valor del solar (F)',F>0?fmtE.format(F):'Inviable ('+fmtE.format(F)+')',edif&&F>0?fmtE2.format(F/edif)+' /m² edificable':'', 'F = VM·(1−b) − ΣCi (residual estático, Orden ECO/805/2003). Si sale negativo, la promoción no soporta el precio del suelo.');
+}
+
+/* ================= Obra en construcción ================= */
+function calcObra(){
+  const suelo=num('ob-suelo'), pres=num('ob-pres'), pct=num('ob-pct')/100;
+  const ejec=pres*pct, g=ejec*num('ob-g')/100;
+  const actual=suelo+ejec+g;
+  const vt=num('ob-vt');
+  ficha('ficha-obra','Obra en construcción',[
+    ['Valor del suelo', fmtE.format(suelo)],
+    ['Obra ejecutada ('+fmtN.format(pct*100)+' %)', fmtE.format(ejec)],
+    ['Gastos necesarios proporcionales', fmtE.format(g)],
+    ['Hipótesis edificio terminado (mercado)', fmtE.format(vt)],
+    ['Obra pendiente estimada', fmtE.format(pres-ejec)],
+  ],'Valor actual de la obra',fmtE.format(actual),'', 'Método del coste para edificios en construcción: suelo + obra ejecutada según última certificación, sin gastos financieros ni comerciales (Orden ECO/805/2003).');
+}
+
+/* ================= Rústica ================= */
+function calcRustica(){
+  const renta=num('ru-renta')*num('ru-ha');
+  const coef=parseFloat($('ru-cultivo').value);
+  const tipo=num('ru-tipo')/100*coef;
+  const u=Math.min(Math.max(num('ru-u'),1),2);
+  const vTierra=tipo? (renta/tipo)*u : 0;
+  const total=vTierra+num('ru-edif');
+  ficha('ficha-rustica','Finca rústica',[
+    ['Renta anual neta', fmtE.format(renta)],
+    ['Tipo capitalización corregido', fmtN.format(tipo*100)+' %'],
+    ['Valor por capitalización', fmtE.format(tipo?renta/tipo:0)],
+    ['Factor de localización u', fmtN.format(u)],
+    ['Valor de la tierra', fmtE.format(vTierra)],
+    ['Edificaciones no vinculadas', fmtE.format(num('ru-edif'))],
+  ],'Valor estimado de la finca',fmtE.format(total),num('ru-ha')?fmtE.format(total/num('ru-ha'))+' /ha':'', 'Capitalización de la renta con coeficiente del Anexo I y factor u ≤ 2 (RD 1492/2011, Reglamento de Valoraciones de la Ley de Suelo).');
+}
+
+/* ================= Analítico ================= */
+function calcAnalitico(){
+  const ingresos=num('an-renta')*num('an-meses');
+  const neta=ingresos-num('an-gastos');
+  const t=num('an-tipo')/100;
+  const V=t? neta/t : 0;
+  ficha('ficha-renta','Actualización de rentas',[
+    ['Ingresos anuales', fmtE.format(ingresos)],
+    ['Gastos anuales', '−'+fmtE.format(num('an-gastos'))],
+    ['Renta neta anual', fmtE.format(neta)],
+    ['Tipo de actualización', fmtN.format(t*100)+' %'],
+    ['Rentabilidad bruta implícita', V>0?fmtN.format(ingresos/V*100)+' %':'—'],
+  ],'Valor por actualización',neta>0?fmtE.format(V):'Renta neta negativa','', 'V = renta neta ÷ tipo de actualización. Con contrato en vigor, estima los flujos según sus cláusulas y revierte a renta de mercado al vencimiento (Orden ECO/805/2003).');
+}
+
+/* ================= Fiscal ================= */
+function irpfAhorro(g){
+  if(g<=0) return 0;
+  const tramos=[[6000,.19],[44000,.21],[150000,.23],[100000,.27],[Infinity,.30]];
+  let resto=g,cuota=0;
+  for(const [ancho,t] of tramos){ const b=Math.min(resto,ancho); cuota+=b*t; resto-=b; if(resto<=0)break; }
+  return cuota;
+}
+function calcVenta(){
+  const v=num('fv-valor'), tipo=$('fv-tipo').value; let lineas=[],imp=0,det='';
+  if(tipo==='usada'){ imp=v*num('fv-itp')/100; lineas.push(['ITP ('+fmtN.format(num('fv-itp'))+' %)',fmtE.format(imp)]); det='Vivienda usada: ITP autonómico sobre el mayor entre precio y valor de referencia.'; }
+  else { const iva=tipo==='nueva'?0.10:0.21; const cIva=v*iva, cAjd=v*num('fv-ajd')/100; imp=cIva+cAjd;
+    lineas.push(['IVA ('+(iva*100)+' %)',fmtE.format(cIva)],['AJD ('+fmtN.format(num('fv-ajd'))+' %)',fmtE.format(cAjd)]);
+    det='Primera transmisión: IVA + Actos Jurídicos Documentados sobre la escritura.'; }
+  const ng=num('fv-ng'); const total=imp+ng;
+  lineas.unshift(['Base (precio / valor de referencia)',fmtE.format(v)]);
+  lineas.push(['Notaría, registro y gestoría (est.)',fmtE.format(ng)]);
+  ficha('ficha-fiscal','Compraventa · costes del comprador',lineas,'Coste fiscal + gestión estimado',fmtE.format(total),fmtN.format(v?total/v*100:0)+' % sobre el valor',det+' El vendedor liquida aparte su IRPF por la ganancia y la plusvalía municipal.');
+}
+function calcHerencia(){
+  const base=num('fh-valor')*num('fh-cuota')/100;
+  const bl=Math.max(0,base-num('fh-red'));
+  const cuotaIntegra=bl*num('fh-tipo')/100;
+  const cuota=cuotaIntegra*(1-num('fh-bonif')/100);
+  ficha('ficha-fiscal','Herencia · ISD del heredero',[
+    ['Base imponible (su cuota)',fmtE.format(base)],
+    ['Reducción por parentesco','−'+fmtE.format(Math.min(base,num('fh-red')))],
+    ['Base liquidable',fmtE.format(bl)],
+    ['Cuota antes de bonificación',fmtE.format(cuotaIntegra)],
+    ['Bonificación en cuota',fmtN.format(num('fh-bonif'))+' %'],
+  ],'ISD estimado a pagar',fmtE.format(cuota),'', 'Estimación simplificada con tipo medio: la tarifa real es progresiva y depende del grupo de parentesco y del patrimonio preexistente. Añade la plusvalía municipal.');
+}
+function calcDonacion(){
+  const v=num('fd-valor');
+  const isd=v*num('fd-tipo')/100*(1-num('fd-bonif')/100);
+  const g=Math.max(0,v-num('fd-adq'));
+  const irpf=irpfAhorro(g);
+  ficha('ficha-fiscal','Donación · carga fiscal conjunta',[
+    ['Valor donado',fmtE.format(v)],
+    ['ISD del donatario (estimado)',fmtE.format(isd)],
+    ['Ganancia patrimonial del donante',fmtE.format(g)],
+    ['IRPF del donante (tarifa del ahorro)',fmtE.format(irpf)],
+  ],'Coste fiscal total estimado',fmtE.format(isd+irpf),'', 'La donación tributa dos veces: el donatario por ISD y el donante por IRPF como si vendiera. Añade la plusvalía municipal (a cargo del donatario). Compara siempre con el coste de heredar.');
+}
+function calcDivorcio(){
+  const v=num('fx-valor');
+  const ajd=v*num('fx-ajd')/100;
+  const comp=v*(100-num('fx-cuota'))/100;
+  ficha('ficha-fiscal','Divorcio · extinción de condominio',[
+    ['Valor total del inmueble',fmtE.format(v)],
+    ['Compensación al otro cónyuge',fmtE.format(comp)],
+    ['TPO','No sujeta (bien indivisible)'],
+    ['Plusvalía municipal','No sujeta (art. 104 TRLRHL)'],
+    ['AJD ('+fmtN.format(num('fx-ajd'))+' % s/ valor total)',fmtE.format(ajd)],
+  ],'Coste fiscal estimado de la adjudicación',fmtE.format(ajd),'', 'La base del AJD en extinciones de condominio suele ser el valor total del bien según doctrina administrativa, aunque hay resoluciones que la limitan a la parte adquirida: confírmalo para tu CCAA.');
+}
+function calcPlusvalia(){
+  const vcs=num('fp-vcs'), vct=num('fp-vct')||1;
+  const t=Math.min(num('fp-tipo'),30)/100;
+  const biObj=vcs*num('fp-coef'); const cObj=biObj*t;
+  const gan=num('fp-pt')-num('fp-pa');
+  const biReal=Math.max(0,gan)*(vcs/vct); const cReal=biReal*t;
+  const noSujeta=gan<=0;
+  const mejor=noSujeta?0:Math.min(cObj,cReal);
+  ficha('ficha-fiscal','Plusvalía municipal (IIVTNU)',[
+    ['Método objetivo: base',fmtE.format(biObj)],
+    ['Método objetivo: cuota',fmtE.format(cObj)],
+    ['Incremento real de valor',fmtE.format(gan)],
+    ['Método real: base ('+fmtN.format(vcs/vct*100)+' % suelo)',fmtE.format(biReal)],
+    ['Método real: cuota',fmtE.format(cReal)],
+  ],'Cuota a pagar (la menor)',noSujeta?'No sujeta: sin incremento':fmtE.format(mejor),'', 'Doble cálculo del RD-ley 26/2021: el contribuyente puede optar por el método más favorable; sin incremento real no hay tributación.');
+}
+
+/* ================= Checklists ================= */
+const MACRO=[
+ ['Político-legal','Normativa de vivienda y alquiler vigente (estatal y autonómica)'],
+ ['Político-legal','Planeamiento urbanístico: PGOU, suelo en desarrollo, licencias'],
+ ['Político-legal','Zonas tensionadas o límites de renta declarados en el municipio'],
+ ['Político-legal','Ayudas públicas a compra, rehabilitación o eficiencia energética'],
+ ['Político-legal','Fiscalidad autonómica y municipal aplicable (ITP, AJD, IBI, plusvalía)'],
+ ['Económico','Evolución del euríbor y condiciones hipotecarias de la banca local'],
+ ['Económico','Precios €/m² de venta y alquiler en la zona: tendencia 12–24 meses'],
+ ['Económico','Stock disponible y tiempo medio de venta en el micromercado'],
+ ['Económico','Renta media, empleo y capacidad de compra de la demanda local'],
+ ['Económico','Peso del comprador extranjero e inversor en la zona'],
+ ['Sociodemográfico','Evolución de población y hogares: crecimiento, envejecimiento'],
+ ['Sociodemográfico','Tipología de demanda dominante: familias, estudiantes, teletrabajo'],
+ ['Sociodemográfico','Cambios de hábitos: espacios exteriores, home office, sostenibilidad'],
+ ['Tecnológico','Presencia de la competencia en portales y calidad de sus anuncios'],
+ ['Tecnológico','Herramientas propias: CRM, valoración automática, tour virtual, firma digital'],
+ ['Ecológico','Certificación energética exigible y calendario de exigencias europeas'],
+ ['Ecológico','Riesgos de la zona: inundabilidad, ruido, islas de calor'],
+ ['Entorno local','Infraestructuras previstas: transporte, equipamientos, comercio'],
+ ['Entorno local','Seguridad, limpieza y percepción del barrio'],
+ ['Entorno local','Proyectos que puedan alterar valores: nuevos desarrollos, rehabilitaciones']
+];
+const MKT=[
+ ['Captación y producto','Valoración objetiva con comparables documentados (esta app)'],
+ ['Captación y producto','Nota simple y verificación de cargas, ITE/IEE y certificado energético'],
+ ['Captación y producto','Encargo de venta firmado con estrategia de precio y honorarios claros'],
+ ['Captación y producto','Home staging o puesta a punto: despersonalizar, luz, pequeñas reparaciones'],
+ ['Precio','Precio de salida alineado con comparables (no con expectativas del propietario)'],
+ ['Precio','Plan de revisión de precio a 30/60/90 días pactado por escrito'],
+ ['Difusión','Reportaje fotográfico profesional y plano acotado'],
+ ['Difusión','Vídeo o tour virtual del inmueble'],
+ ['Difusión','Anuncio con titular orientado a beneficio y descripción completa'],
+ ['Difusión','Publicación en portales principales y web propia con seguimiento de métricas'],
+ ['Difusión','Cruce con base de datos de demandas activas del CRM'],
+ ['Difusión','Cartelería, escaparate y prescriptores de zona (farming)'],
+ ['Difusión','Redes sociales: publicación orgánica y campaña segmentada si procede'],
+ ['Visitas y negociación','Cualificación previa del comprador: financiación y motivación'],
+ ['Visitas y negociación','Guion de visita: orden de estancias y objeciones frecuentes preparadas'],
+ ['Visitas y negociación','Informe quincenal al propietario: visitas, feedback, contactos'],
+ ['Visitas y negociación','Ofertas siempre por escrito y con acreditación de solvencia'],
+ ['Cierre y posventa','Arras con plazos, penalizaciones y contingencia de financiación'],
+ ['Cierre y posventa','Coordinación de notaría, cancelaciones y provisión de fondos'],
+ ['Cierre y posventa','Checklist de suministros y entrega de llaves; petición de reseña y referidos']
+];
+function renderChecklist(listId, progId, data){
+  let html='',lastCat='';
+  data.forEach(it=>{
+    if(it[0]!==lastCat){ html+=`<p style="margin:14px 0 4px"><span class="pill">${it[0]}</span></p>`; lastCat=it[0]; }
+    html+=`<label class="check-item"><input type="checkbox"><span>${it[1]}</span></label>`;
+  });
+  $(listId).innerHTML=html;
+  $(listId).addEventListener('change',e=>{
+    if(e.target.type!=='checkbox')return;
+    e.target.closest('.check-item').classList.toggle('done',e.target.checked);
+    const boxes=[...$(listId).querySelectorAll('input')];
+    const pct=boxes.filter(b=>b.checked).length/boxes.length*100;
+    $(progId).style.width=pct+'%';
+  });
+}
+renderChecklist('list-macro','prog-macro',MACRO);
+renderChecklist('list-mkt','prog-mkt',MKT);
+
+/* ==================================================================
+   VENTANAS EMERGENTES DE AYUDA (conceptos, fórmulas y tablas)
+   ================================================================== */
+const INFO = {
+/* ---- conceptos de comparación ---- */
+'testigo':{t:'¿Qué es un testigo?',h:`
+<p>Un <b>testigo</b> (o comparable) es un inmueble muy parecido al que quieres valorar, del que conoces un precio real: vendido recientemente o, en su defecto, en oferta activa.</p>
+<h5>Requisitos de un buen testigo</h5>
+<table class="mtab"><tr><th>Criterio</th><th>Qué exigir</th></tr>
+<tr><td>Ubicación</td><td>Misma zona o entorno de valor equivalente (mismo tramo de calle en locales)</td></tr>
+<tr><td>Tipología</td><td>Mismo uso y producto: no mezclar piso con ático, ni local a pie de calle con entreplanta</td></tr>
+<tr><td>Fecha del dato</td><td>Cuanto más reciente mejor; en mercados que se mueven, últimos 6–12 meses</td></tr>
+<tr><td>Número</td><td>Mínimo 6 para una tasación regulada (Orden ECO/805/2003); en trabajo de agencia, cuantos más mejor</td></tr>
+<tr><td>Fuente</td><td>Ventas cerradas &gt; notaría/registro &gt; ofertas de portal (a las ofertas se les aplica el corrector 0,70–1,00)</td></tr></table>
+<p class="hint">Documenta siempre de dónde sale cada testigo: es lo que da credibilidad a tu valoración ante el propietario.</p>`},
+'precio-total':{t:'Precio total del testigo',h:`<p>Precio de la operación completa del testigo, en euros. Si es una oferta de portal, recuerda que después se aplica el <b>coeficiente corrector de oferta</b> (0,70–1,00) porque los precios anunciados suelen estar por encima del cierre real.</p><div class="formula">€/m² del testigo = Precio total ÷ Superficie</div>`},
+'superficie':{t:'Superficie del testigo',h:`<p>Usa siempre el <b>mismo criterio de superficie en todos los testigos y en el inmueble a valorar</b>: construida con o sin comunes, o útil. Mezclar criterios es el error más común y desvía el €/m² un 10–15 %.</p>`},
+'c-situacion':{t:'Coeficiente de situación',h:`
+<p>Corrige la diferencia de ubicación entre el testigo y el inmueble a valorar. Regla: <b>coeficiente &gt; 1 si tu inmueble está mejor situado que el testigo</b>; &lt; 1 si está peor.</p>
+<h5>Tabla orientativa</h5>
+<table class="mtab"><tr><th>Comparación de ubicación</th><th>Coeficiente</th></tr>
+<tr><td>Mismo tramo de calle / mismo entorno</td><td>1,00</td></tr>
+<tr><td>El tuyo en calle algo mejor (más comercial, más tranquila según el producto)</td><td>1,05</td></tr>
+<tr><td>El tuyo claramente mejor (esquina prime, primera línea)</td><td>1,10 – 1,15</td></tr>
+<tr><td>El tuyo en calle algo peor</td><td>0,95</td></tr>
+<tr><td>El tuyo claramente peor (calle secundaria, trasera)</td><td>0,85 – 0,90</td></tr></table>
+<p class="hint">Trabaja en saltos cortos de 0,05. Si necesitas coeficientes mayores de ±15 %, el testigo probablemente no vale: búscalo más parecido.</p>`},
+'c-antiguedad':{t:'Coeficiente de antigüedad y estado',h:`
+<p>Ajusta la diferencia de edad y conservación. <b>&gt; 1 si tu inmueble está más nuevo o mejor conservado que el testigo</b>; &lt; 1 si está peor.</p>
+<table class="mtab"><tr><th>Comparación</th><th>Coeficiente</th></tr>
+<tr><td>Misma antigüedad y estado similar</td><td>1,00</td></tr>
+<tr><td>El tuyo reformado y el testigo original</td><td>1,05 – 1,15</td></tr>
+<tr><td>El tuyo ~10 años más nuevo</td><td>1,05</td></tr>
+<tr><td>El tuyo original y el testigo reformado</td><td>0,85 – 0,95</td></tr>
+<tr><td>El tuyo ~10 años más viejo</td><td>0,95</td></tr></table>
+<p>En valoraciones reguladas, la homogeneización por antigüedad y estado se hace con los coeficientes β del Anexo II del RD 1492/2011, ponderados por el peso F de la construcción sobre el valor total:</p>
+<div class="formula">Vv′ = Vv × (1 − F + F·β) ÷ (1 − F + F·β<sub>i</sub>)</div>`},
+'c-superficie':{t:'Coeficiente de superficie',h:`
+<p>Los inmuebles pequeños tienen un €/m² más alto que los grandes dentro de la misma zona. Este coeficiente corrige esa distorsión.</p>
+<table class="mtab"><tr><th>Comparación de tamaño</th><th>Coeficiente</th></tr>
+<tr><td>Tamaños similares (±15 %)</td><td>1,00</td></tr>
+<tr><td>El testigo bastante más pequeño que el tuyo (su €/m² viene «inflado»)</td><td>0,90 – 0,95</td></tr>
+<tr><td>El testigo bastante más grande que el tuyo</td><td>1,05 – 1,10</td></tr></table>`},
+'c-otros':{t:'Coeficiente «otros»',h:`
+<p>Cajón para diferencias que no encajan en las anteriores: orientación, vistas, terraza, ascensor, plaza de garaje incluida, calidades de zona común, fondo/fachada en locales…</p>
+<table class="mtab"><tr><th>Ejemplos</th><th>Coeficiente</th></tr>
+<tr><td>El tuyo con ascensor y el testigo sin él (plantas altas)</td><td>1,10</td></tr>
+<tr><td>El tuyo con terraza amplia / vistas despejadas</td><td>1,05</td></tr>
+<tr><td>El testigo con garaje incluido y el tuyo sin</td><td>0,95 (o resta el valor del garaje al precio del testigo)</td></tr>
+<tr><td>El tuyo interior y el testigo exterior</td><td>0,90</td></tr></table>
+<p class="hint">Si una diferencia tiene precio de mercado claro (un garaje, un trastero), es más limpio restarlo del precio del testigo que meterlo en el coeficiente.</p>`},
+'c-planta':{t:'Coeficiente de planta / altura',h:`
+<p>En vivienda, la altura suele sumar valor (luz, vistas, ruido), siempre que haya ascensor. El temario propone saltos de 0,05 por planta.</p>
+<table class="mtab"><tr><th>Comparación</th><th>Coeficiente</th></tr>
+<tr><td>Testigo en la misma planta</td><td>1,00</td></tr>
+<tr><td>Testigo una planta por debajo de la tuya</td><td>1,05</td></tr>
+<tr><td>Testigo dos plantas por debajo</td><td>1,10</td></tr>
+<tr><td>Testigo por encima de la tuya</td><td>0,95 por planta</td></tr>
+<tr><td>Sin ascensor: la lógica se invierte a partir de la 2ª planta</td><td>invertir signos</td></tr></table>`},
+'c-calidad':{t:'Coeficiente de calidad constructiva',h:`
+<p>Compara materiales, carpinterías, instalaciones y acabados. <b>&gt; 1 si tu inmueble tiene mejores calidades que el testigo.</b></p>
+<table class="mtab"><tr><th>Comparación</th><th>Coeficiente</th></tr>
+<tr><td>Calidades equivalentes</td><td>1,00</td></tr><tr><td>El tuyo con calidades algo superiores</td><td>1,05</td></tr>
+<tr><td>El tuyo claramente superior (edificio representativo, domótica, A energética)</td><td>1,10 – 1,15</td></tr>
+<tr><td>El tuyo con calidades inferiores</td><td>0,90 – 0,95</td></tr></table>`},
+'precio-m2':{t:'Precio por metro cuadrado',h:`<p>Repercusión unitaria del testigo (precio ÷ superficie). Es la variable que se compara y ajusta en todos los sistemas: trabajar en €/m² permite comparar inmuebles de tamaños distintos.</p>`},
+'punt':{t:'Puntuaciones del sistema de ponderación',h:`
+<p>En el sistema de ponderación cada variable (situación, calidad, fachada, estado…) se puntúa de <b>1 a 10</b> en cada testigo y en el inmueble a valorar, y cada variable tiene un <b>peso</b>; los pesos deben sumar 1.</p>
+<div class="formula">Puntuación = Σ (nota de la variable × peso)</div>
+<div class="formula">€/m² ajustado del testigo = €/m² testigo × (Puntuación del inmueble ÷ Puntuación del testigo)</div>
+<table class="mtab"><tr><th>Guía de notas</th><th></th></tr>
+<tr><td>9–10</td><td>Excelente: lo mejor de la zona</td></tr><tr><td>7–8</td><td>Bueno, por encima de la media</td></tr>
+<tr><td>5–6</td><td>En la media del mercado local</td></tr><tr><td>3–4</td><td>Por debajo de la media</td></tr><tr><td>1–2</td><td>Deficiente</td></tr></table>`},
+'ctf':{t:'Coeficiente de tabla de fondo (C.T.F.)',h:`
+<p>Para locales en zonas de alta densidad comercial: la banda pegada al escaparate vale más que el fondo. El local se divide en <b>crujías</b> (bandas) y a cada cuadrícula se le asigna un porcentaje decreciente desde el 100 % de la primera línea.</p>
+<div class="formula">C.T.F. = Σ porcentajes de las cuadrículas ÷ nº de cuadrículas</div>
+<div class="formula">Valor 1ª crujía del testigo = (€/m² de venta × 100) ÷ C.T.F. del testigo</div>
+<table class="mtab"><tr><th>Guía de porcentajes por banda</th><th></th></tr>
+<tr><td>1ª crujía (escaparate)</td><td>100 %</td></tr><tr><td>2ª crujía</td><td>90–95 %</td></tr>
+<tr><td>3ª crujía</td><td>75–85 %</td></tr><tr><td>Fondo / zonas oscuras</td><td>40–75 %</td></tr>
+<tr><td>Estrechamientos, pilares, recodos</td><td>reducir 10–20 puntos adicionales</td></tr></table>
+<p>Ejemplo del temario: porcentajes 100·3 + 95·3 + 80·3 + 75·2 + 40 sobre 12 cuadrículas → C.T.F. = 84,58.</p>`},
+'pond-tf':{t:'Ponderación entre testigos',h:`
+<p>Peso que das a cada testigo según su similitud de <b>uso y ubicación</b> con el local a valorar. La suma debe ser <b>100 %</b>. Un testigo del mismo sector comercial y misma acera pesa más que uno de uso distinto dos calles más allá.</p>
+<div class="formula">Valor 1ª crujía del local = Σ (Valor 1ª crujía testigo × ponderación)</div>`},
+/* ---- sistemas ---- */
+'sys-homog':{t:'Sistema de homogeneización — fórmula',h:`
+<p>Es el sistema más usado y el que exige la práctica de tasación: cada testigo se «convierte» en tu inmueble aplicando coeficientes correctores a su €/m².</p>
+<div class="formula">€/m² homogeneizado = (Precio ÷ Superficie) × C<sub>sit</sub> × C<sub>ant</sub> × C<sub>sup</sub> × C<sub>otros</sub></div>
+<div class="formula">Valor = media de los €/m² homogeneizados × corrector de oferta × superficie</div>
+<p>Pulsa el título de cada columna de la tabla para ver la guía de cada coeficiente con ejemplos.</p>`},
+'sys-pond':{t:'Sistema de ponderación — fórmula',h:`
+<p>Se eligen variables relevantes, se les asigna un peso (suman 1) y se puntúan de 1 a 10 en cada testigo y en el inmueble objeto.</p>
+<div class="formula">P = Σ (nota × peso) &nbsp;&nbsp;→&nbsp;&nbsp; €/m² ajustado = €/m² testigo × P<sub>objeto</sub> ÷ P<sub>testigo</sub></div>
+<div class="formula">Valor = media de los €/m² ajustados × superficie</div>`},
+'sys-tf':{t:'Sistema de tabla de fondo — fórmula',h:`
+<p>Específico de locales céntricos. Pasos:</p>
+<p>1) C.T.F. de cada local = Σ porcentajes ÷ nº cuadrículas.<br>2) Valor 1ª crujía de cada testigo = €/m² × 100 ÷ C.T.F.<br>3) Valor 1ª crujía del objeto = media ponderada de los anteriores.<br>4) €/m² del objeto = Valor 1ª crujía × C.T.F. objeto ÷ 100.</p>
+<div class="formula">V = V<sub>1ªcrujía</sub> × C.T.F.<sub>objeto</sub> ÷ 100 × superficie</div>
+<p>Pulsa «C.T.F.» en la cabecera de la tabla para ver cómo asignar porcentajes a las crujías.</p>`},
+'sys-clasico':{t:'Sistema clásico — fórmula',h:`
+<p>Media aritmética simple de las repercusiones de los testigos. Solo sirve cuando los comparables son casi idénticos al inmueble objeto, porque no corrige ninguna diferencia.</p>
+<div class="formula">V = (Σ €/m² testigos ÷ n) × superficie</div>`},
+/* ---- módulos ---- */
+'m-comparacion':{t:'Método de comparación — visión general',h:`
+<p>Se basa en el <b>principio de sustitución</b>: nadie paga por un inmueble más de lo que le costaría otro equivalente. Es el método preferente para vivienda y locales cuando existe mercado.</p>
+<p>Los cuatro sistemas de esta pantalla son formas distintas de ajustar los testigos al inmueble objeto: pulsa el botón de información dentro de cada pestaña para ver su fórmula, y los títulos de las columnas para las tablas de coeficientes.</p>
+<h5>Errores típicos</h5>
+<p>· Mezclar superficie útil y construida.<br>· Usar precios de oferta sin corrector.<br>· Coeficientes enormes para «salvar» testigos malos.<br>· Menos de 6 comparables en valoraciones formales.</p>`},
+'m-vivienda':{t:'Valoración de vivienda — fórmula y criterios',h:`
+<p>Comparación con homogeneización, igual que en locales pero con las variables propias de vivienda: planta, ascensor, exterior/interior, estado, calidades.</p>
+<div class="formula">€/m² homog. = (Precio ÷ Sup.) × C<sub>sit</sub> × C<sub>planta</sub> × C<sub>ant/estado</sub> × C<sub>calidad</sub></div>
+<div class="formula">Valor = media × corrector de oferta × superficie construida</div>
+<p><b>Valor de mercado vs valor hipotecario:</b> el hipotecario (finalidad de garantía) es un valor prudente y sostenible en el tiempo, sin elementos especulativos; puede quedar por debajo del de mercado. Lo fija una sociedad de tasación homologada conforme a la Orden ECO/805/2003.</p>`},
+'m-coste':{t:'Método del coste — fórmulas',h:`
+<div class="formula">VRB = Valor del suelo + Coste de construcción + Gastos necesarios</div>
+<div class="formula">Depreciación física = (Coste construcción + Gastos) × (antigüedad ÷ vida útil)</div>
+<div class="formula">VRN = VRB − Depreciación física − Depreciación funcional</div>
+<h5>Vidas útiles máximas (Orden ECO/805/2003)</h5>
+<table class="mtab"><tr><th>Uso</th><th>Vida útil</th></tr>
+<tr><td>Residencial</td><td>100 años</td></tr><tr><td>Oficinas</td><td>75 años</td></tr>
+<tr><td>Comercial</td><td>50 años</td></tr><tr><td>Industrial</td><td>35 años</td></tr></table>
+<p>Gastos necesarios: honorarios técnicos, licencias y tributos no recuperables, seguros obligatorios, administración del promotor. <b>Nunca</b> gastos financieros ni de comercialización. El suelo no se deprecia.</p>`},
+'m-solar':{t:'Método residual estático — fórmula',h:`
+<div class="formula">F = VM × (1 − b) − Σ C<sub>i</sub></div>
+<p>F = valor del suelo · VM = valor de mercado del producto terminado · b = margen de beneficio del promotor (en tanto por uno) · ΣC<sub>i</sub> = costes de construcción y gastos de la promoción.</p>
+<h5>Márgenes orientativos (Anexo IV ECO/805/2003, sin financiación ajena)</h5>
+<table class="mtab"><tr><th>Uso</th><th>b mínimo</th></tr>
+<tr><td>Vivienda primera residencia</td><td>18 %</td></tr><tr><td>Vivienda segunda residencia</td><td>24 %</td></tr>
+<tr><td>Oficinas</td><td>21 %</td></tr><tr><td>Locales comerciales</td><td>24 %</td></tr>
+<tr><td>Naves industriales</td><td>27 %</td></tr><tr><td>Aparcamientos</td><td>20 %</td></tr><tr><td>Hoteles</td><td>22 %</td></tr></table>
+<p class="hint">Estos mínimos pueden actualizarse por norma: compruébalos antes de un trabajo formal. Si la promoción dura más de un año, procede el residual dinámico (flujos de caja descontados).</p>`},
+'m-obra':{t:'Edificio en construcción — fórmula',h:`
+<div class="formula">Valor actual = Valor del suelo + Obra ejecutada + Gastos necesarios proporcionales</div>
+<p>La obra ejecutada se acredita con la <b>última certificación de obra</b>. No se incluyen gastos financieros ni de comercialización.</p>
+<h5>Documentación exigible</h5>
+<p>Proyecto visado · licencia de obras · certificaciones de obra · contrato de ejecución · seguro decenal (en vivienda).</p>
+<p class="hint">La hipótesis de edificio terminado sirve de contraste: valor actual + coste pendiente + margen razonable no debería superar el valor terminado de mercado.</p>`},
+'m-rustica':{t:'Finca rústica — fórmula (RD 1492/2011)',h:`
+<div class="formula">V<sub>tierra</sub> = [ Renta anual (real o potencial, la mayor) ÷ (r × coef. cultivo) ] × u</div>
+<p>r = tipo de capitalización base publicado anualmente · coef. cultivo = Anexo I del Reglamento · u = factor global de localización (u1·u2·u3, máximo 2) por accesibilidad a núcleos, a centros de actividad económica y valor paisajístico.</p>
+<h5>Coeficientes del Anexo I (selección)</h5>
+<table class="mtab"><tr><th>Aprovechamiento</th><th>Coef.</th></tr>
+<tr><td>Labor secano</td><td>0,49</td></tr><tr><td>Labor regadío / hortalizas</td><td>0,78</td></tr>
+<tr><td>Cítricos</td><td>0,61</td></tr><tr><td>Frutales no cítricos</td><td>0,72</td></tr>
+<tr><td>Viñedo</td><td>0,59</td></tr><tr><td>Olivar</td><td>0,43</td></tr>
+<tr><td>Prados</td><td>0,39</td></tr><tr><td>Pastizal</td><td>0,51</td></tr><tr><td>Forestal</td><td>0,58</td></tr></table>
+<p><b>Ojo:</b> las edificaciones vinculadas a la explotación ya están dentro de la renta; solo se suman aparte las no vinculadas. Para finalidad hipotecaria se toma el menor entre comparación y actualización.</p>`},
+'m-renta':{t:'Actualización de rentas — fórmula',h:`
+<div class="formula">V = Renta neta anual ÷ tipo de actualización</div>
+<div class="formula">Renta neta = ingresos anuales − gastos (IBI, comunidad, seguro, mantenimiento, vacancia)</div>
+<p>El tipo de actualización = tipo libre de riesgo (deuda del Estado) + prima de riesgo según uso, liquidez del activo y solvencia del inquilino.</p>
+<h5>Rentabilidades brutas orientativas de mercado (contrasta con datos actuales de tu zona)</h5>
+<table class="mtab"><tr><th>Producto</th><th>Rango habitual</th></tr>
+<tr><td>Vivienda alquiler estable</td><td>4 – 6 %</td></tr><tr><td>Local comercial</td><td>6 – 8 %</td></tr>
+<tr><td>Oficinas</td><td>5,5 – 7,5 %</td></tr><tr><td>Industrial / logístico</td><td>7 – 10 %</td></tr></table>
+<p class="hint">Con contrato en vigor, valora los flujos según sus cláusulas (renta, actualizaciones, carencias) y la reversión a renta de mercado al vencimiento.</p>`},
+'m-fiscal':{t:'Fiscalidad de las operaciones — mapa general',h:`
+<table class="mtab"><tr><th>Operación</th><th>Impuesto principal</th><th>Modelo</th><th>Plazo</th></tr>
+<tr><td>Compra vivienda usada</td><td>ITP (autonómico)</td><td>600</td><td>30 días hábiles / 1 mes según CCAA</td></tr>
+<tr><td>Compra obra nueva</td><td>IVA 10 % + AJD</td><td>600 (AJD)</td><td>30 días hábiles</td></tr>
+<tr><td>Herencia</td><td>ISD sucesiones</td><td>650</td><td>6 meses (+6 de prórroga)</td></tr>
+<tr><td>Donación</td><td>ISD donaciones + IRPF donante</td><td>651</td><td>30 días hábiles</td></tr>
+<tr><td>Divorcio / condominio</td><td>AJD (o exento si gananciales)</td><td>600</td><td>30 días hábiles</td></tr>
+<tr><td>Toda transmisión de suelo urbano</td><td>Plusvalía municipal</td><td>autoliquidación municipal</td><td>30 días hábiles (6 meses mortis causa)</td></tr></table>
+<p>Abre la información de cada pestaña para ver el detalle de plazos, modelos, documentación y trucos de cada supuesto.</p>`},
+/* ---- fiscal por supuesto ---- */
+'i-venta':{t:'Compraventa — impuestos, plazos y modelos',h:`
+<h5>Fórmulas</h5>
+<div class="formula">Usada: ITP = Base × tipo autonómico &nbsp;·&nbsp; Nueva: IVA 10 % + AJD = Base × tipo AJD</div>
+<p>Base = el mayor entre el precio y el <b>valor de referencia catastral</b> (consúltalo en la Sede del Catastro antes de firmar: si es superior al precio, se tributa por él).</p>
+<h5>Plazos y modelos del comprador</h5>
+<table class="mtab"><tr><th>Trámite</th><th>Modelo</th><th>Plazo</th></tr>
+<tr><td>ITP o AJD</td><td>600</td><td>30 días hábiles desde la escritura (1 mes en varias CCAA)</td></tr>
+<tr><td>Inscripción registral</td><td>presentación telemática (notaría)</td><td>calificación: 15 días hábiles; asiento vigente 60 días</td></tr>
+<tr><td>Cambio catastral</td><td>900D</td><td>2 meses (los notarios suelen comunicarlo)</td></tr></table>
+<h5>Del vendedor</h5>
+<p>Plusvalía municipal (30 días hábiles) e IRPF de la ganancia en la renta del año siguiente. Exenciones IRPF frecuentes: reinversión en vivienda habitual y mayores de 65 años que venden su vivienda habitual.</p>`},
+'i-herencia':{t:'Herencia — impuestos, plazos y modelos',h:`
+<h5>Fórmula simplificada del ISD</h5>
+<div class="formula">Cuota = (Base − reducciones) × tarifa × coef. multiplicador − bonificaciones</div>
+<p>En Andalucía, cónyuge, descendientes y ascendientes (grupos I y II): reducción de hasta 1.000.000 € y bonificación del 99 % en cuota. Cada CCAA tiene su régimen.</p>
+<h5>Plazos y modelos</h5>
+<table class="mtab"><tr><th>Trámite</th><th>Modelo / documento</th><th>Plazo</th></tr>
+<tr><td>ISD sucesiones</td><td>650</td><td>6 meses desde el fallecimiento; prórroga de otros 6 pidiéndola en los 5 primeros</td></tr>
+<tr><td>Plusvalía municipal</td><td>autoliquidación municipal</td><td>6 meses, prorrogables a 1 año</td></tr>
+<tr><td>Inscripción</td><td>escritura de herencia (o instancia si hay heredero único)</td><td>sin plazo, pero necesaria para vender con normalidad</td></tr></table>
+<h5>Documentación</h5>
+<p>Certificado de defunción · certificado de últimas voluntades · certificado de seguros de vida · testamento o declaración de herederos · títulos de propiedad y valor de referencia.</p>
+<p><b>Truco profesional:</b> los excesos de adjudicación declarados entre herederos tributan por TPO, salvo bienes indivisibles compensados en metálico (art. 1.062 CC). Repartir bien la herencia ahorra impuestos.</p>`},
+'i-donacion':{t:'Donación — impuestos, plazos y modelos',h:`
+<h5>Doble tributación</h5>
+<div class="formula">Donatario: ISD donaciones &nbsp;·&nbsp; Donante: IRPF por (valor donado − valor adquisición) a la tarifa del ahorro</div>
+<p>Tarifa del ahorro vigente: 19 % hasta 6.000 · 21 % hasta 50.000 · 23 % hasta 200.000 · 27 % hasta 300.000 · 30 % en adelante. Las pérdidas por donación no se deducen.</p>
+<h5>Plazos y modelos</h5>
+<table class="mtab"><tr><th>Trámite</th><th>Modelo</th><th>Plazo</th></tr>
+<tr><td>ISD donaciones</td><td>651</td><td>30 días hábiles desde la escritura</td></tr>
+<tr><td>Plusvalía municipal (donatario)</td><td>autoliquidación</td><td>30 días hábiles</td></tr>
+<tr><td>IRPF donante</td><td>declaración anual</td><td>campaña de renta del año siguiente</td></tr></table>
+<p>La donación de inmuebles exige <b>escritura pública</b> (art. 633 CC); en Andalucía es además requisito de la bonificación del 99 % para grupos I y II.</p>
+<p><b>Consejo:</b> compara siempre donar vs heredar: en herencia no hay IRPF del transmitente («plusvalía del muerto» no sujeta) y hay reducción de 1.000.000 €; la donación casi siempre sale más cara.</p>`},
+'i-divorcio':{t:'Divorcio y extinción de condominio — claves',h:`
+<h5>Dos supuestos distintos</h5>
+<table class="mtab"><tr><th>Situación</th><th>Tributación de la adjudicación</th></tr>
+<tr><td>Inmueble <b>ganancial</b> adjudicado en la liquidación de la sociedad conyugal</td><td><b>Exenta</b> de ITP y AJD (art. 45.I.B.3 LITPAJD)</td></tr>
+<tr><td>Inmueble en <b>proindiviso</b> (separación de bienes, parejas, coherederos)</td><td>No sujeta a TPO si es indivisible y se compensa en metálico; tributa <b>AJD</b> por la escritura</td></tr></table>
+<p>En ambos casos de crisis matrimonial: <b>sin plusvalía municipal</b> (no sujeción del art. 104 TRLRHL) y sin ganancia en IRPF si no se actualizan valores ni hay excesos.</p>
+<h5>Plazos y modelos</h5>
+<table class="mtab"><tr><th>Trámite</th><th>Modelo / documento</th><th>Plazo</th></tr>
+<tr><td>AJD (o exención)</td><td>600 (se presenta aunque esté exento)</td><td>30 días hábiles</td></tr>
+<tr><td>Inscripción</td><td>convenio regulador aprobado por sentencia o escritura pública</td><td>calificación 15 días hábiles</td></tr></table>
+<p><b>Muy importante:</b> adjudicarse la vivienda no libera de la hipoteca. La novación para sacar al otro cónyuge del préstamo exige consentimiento del banco.</p>`},
+'i-plusvalia':{t:'Plusvalía municipal — doble método y fórmulas',h:`
+<div class="formula">Objetivo: Cuota = (V. catastral suelo × coef. años tenencia) × tipo (máx. 30 %)</div>
+<div class="formula">Real: Cuota = (precio venta − precio compra) × (% suelo s/ catastral) × tipo</div>
+<p>Desde el RD-ley 26/2021 el contribuyente elige el método más favorable, y si no hay incremento real la transmisión <b>no está sujeta</b> (hay que declararlo aportando ambas escrituras).</p>
+<h5>Quién paga y plazos</h5>
+<table class="mtab"><tr><th>Operación</th><th>Sujeto pasivo</th><th>Plazo</th></tr>
+<tr><td>Compraventa</td><td>Vendedor</td><td>30 días hábiles</td></tr>
+<tr><td>Herencia</td><td>Heredero</td><td>6 meses (+6 de prórroga)</td></tr>
+<tr><td>Donación</td><td>Donatario</td><td>30 días hábiles</td></tr>
+<tr><td>Divorcio (crisis matrimonial)</td><td>—</td><td>No sujeta (art. 104 TRLRHL)</td></tr></table>
+<p class="hint">Los coeficientes máximos por años de tenencia se actualizan cada año en los Presupuestos y cada ayuntamiento aprueba los suyos en la ordenanza: consúltala antes de dar la cifra.</p>`},
+};
+
+/* ================= Motor de modales ================= */
+function openInfo(key){
+  const d=INFO[key]; if(!d) return;
+  $('info-title').textContent=d.t;
+  $('info-body').innerHTML=d.h;
+  $('info-overlay').classList.add('open');
+}
+function closeInfo(){ $('info-overlay').classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeInfo(); $('report-view').classList.remove('open'); $('ask-overlay').classList.remove('open'); }});
+
+/* cabeceras de tabla clicables */
+const THEAD_INFO={
+ 'tbl-homog':['testigo','precio-total','superficie','c-situacion','c-antiguedad','c-superficie','c-otros'],
+ 'tbl-pond':['testigo','precio-m2','punt','punt','punt','punt'],
+ 'tbl-tf':['testigo','precio-m2','ctf','pond-tf'],
+ 'tbl-viv':['testigo','precio-total','superficie','c-situacion','c-planta','c-antiguedad','c-calidad'],
+};
+Object.entries(THEAD_INFO).forEach(([tbl,keys])=>{
+  const ths=$(tbl).tHead.rows[0].cells;
+  keys.forEach((k,i)=>{ if(!k)return;
+    const th=ths[i];
+    th.innerHTML=`<button class="th-btn" onclick="openInfo('${k}')" title="Ver explicación">${th.textContent} ⓘ</button>`;
+  });
+});
+
+/* botón de ayuda en la cabecera de cada módulo */
+function helpCard(kind,key,titulo,desc){
+  const ico = kind==='hc-concept' ? '📘' : 'ƒx';
+  const go  = kind==='hc-concept' ? 'Abrir guía' : 'Ver fórmula';
+  return `<div class="help-card ${kind}" onclick="openInfo('${key}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openInfo('${key}')">
+    <div class="hc-ico">${ico}</div>
+    <div class="hc-txt"><div class="hc-t">${titulo}</div><div class="hc-d">${desc}</div></div>
+    <span class="hc-go">${go}</span></div>`;
+}
+const PANEL_INFO={
+ 'p-local':['m-comparacion','Conceptos, fórmulas y ejemplos','Qué es el método de comparación, requisitos de los testigos y errores típicos'],
+ 'p-vivienda':['m-vivienda','Conceptos, fórmulas y ejemplos','Fórmula de homogeneización y diferencia entre valor de mercado e hipotecario'],
+ 'p-coste':['m-coste','Conceptos, fórmulas y ejemplos','VRB, VRN, vidas útiles de la ECO/805 y qué gastos entran'],
+ 'p-solar':['m-solar','Conceptos, fórmulas y ejemplos','La fórmula residual y los márgenes de promotor del Anexo IV'],
+ 'p-obra':['m-obra','Conceptos, fórmulas y ejemplos','Cómo se valora la obra en curso y qué documentación exigir'],
+ 'p-rustica':['m-rustica','Conceptos, fórmulas y ejemplos','Capitalización de rentas, coeficientes de cultivo y factor de localización'],
+ 'p-renta':['m-renta','Conceptos, fórmulas y ejemplos','Actualización de rentas y rentabilidades orientativas por producto'],
+ 'p-fiscal':['m-fiscal','Conceptos, fórmulas y ejemplos','Mapa completo: impuesto, modelo y plazo de cada operación'],
+};
+Object.entries(PANEL_INFO).forEach(([pid,[key,t,d]])=>{
+  const head=document.querySelector('#'+pid+' .panel-head');
+  if(head) head.insertAdjacentHTML('afterend', helpCard('hc-concept',key,t,d));
+});
+const SUB_INFO={
+ 's-homog':['sys-homog','Cómo funciona este sistema (fórmula)','Homogeneización por coeficientes: la fórmula paso a paso'],
+ 's-pond':['sys-pond','Cómo funciona este sistema (fórmula)','Ponderación por variables y puntuaciones de 1 a 10'],
+ 's-tf':['sys-tf','Cómo funciona este sistema (fórmula)','Coeficiente de tabla de fondo y valor de la primera crujía'],
+ 's-clasico':['sys-clasico','Cómo funciona este sistema (fórmula)','Media simple de repercusiones: cuándo sirve y cuándo no'],
+ 'f-venta':['i-venta','Fórmula, plazos y modelos oficiales','ITP o IVA+AJD, modelo 600, valor de referencia y plazos'],
+ 'f-herencia':['i-herencia','Fórmula, plazos y modelos oficiales','ISD, modelo 650, 6 meses + prórroga y documentación'],
+ 'f-donacion':['i-donacion','Fórmula, plazos y modelos oficiales','Modelo 651, IRPF del donante y comparativa con heredar'],
+ 'f-divorcio':['i-divorcio','Fórmula, plazos y modelos oficiales','Gananciales exentos vs proindiviso con AJD, y la hipoteca'],
+ 'f-plusvalia':['i-plusvalia','Fórmula, plazos y modelos oficiales','Doble método, quién paga, plazos y coeficientes'],
+};
+Object.entries(SUB_INFO).forEach(([sid,[key,t,d]])=>{
+  const el=$(sid); if(!el) return;
+  el.insertAdjacentHTML('afterbegin', helpCard('hc-formula',key,t,d));
+});
+bindTabs('tabs-hipo');
+
+/* ================= Simulador de escenarios ================= */
+function calcSim(){
+  const base=num('sim-base'); if(!base) return;
+  const urg=parseFloat($('sim-urg').value);
+  const neg=num('sim-neg')/100, hon=num('sim-hon')/100*1.21;
+  const esc=[
+    ['Pesimista', base*(1+num('sim-pes')/100), '9–12 meses o revisar precio'],
+    ['Base (mercado)', base, '3–6 meses'],
+    ['Optimista', base*(1+num('sim-opt')/100), '1–3 meses si hay demanda activa'],
+  ];
+  const tb=$('sim-out').tBodies[0]; tb.innerHTML='';
+  esc.forEach(([n,v,plazo])=>{
+    const salida=v*(1+neg+urg/100);
+    const cierre=v*(1+urg/100);
+    const h=cierre*hon, neto=cierre-h;
+    tb.insertAdjacentHTML('beforeend',`<tr><td><b>${n}</b></td><td class="num">${fmtE.format(v)}</td><td class="num">${fmtE.format(salida)}</td><td class="num">${fmtE.format(cierre)}</td><td class="num">${fmtE.format(h)}</td><td class="num"><b>${fmtE.format(neto)}</b></td><td>${plazo}</td></tr>`);
+  });
+  $('sim-tabla').style.display='block';
+  const salidaBase=base*(1+neg+urg/100);
+  ficha('ficha-sim','Estrategia de salida',[
+    ['Valor de mercado base',fmtE.format(base)],
+    ['Ajuste por urgencia',fmtN.format(urg)+' %'],
+    ['Margen de negociación',fmtN.format(neg*100)+' %'],
+    ['Cierre esperado (base)',fmtE.format(base*(1+urg/100))],
+    ['Neto vendedor (base)',fmtE.format(base*(1+urg/100)*(1-hon))],
+  ],'Precio de salida recomendado',fmtE.format(salidaBase),'','Pacta por escrito el plan de revisión: si a los 30 días no hay visitas suficientes, el precio de salida está fuera de mercado.');
+}
+
+/* ================= Normativa ================= */
+const NORMAS=[
+ ['Orden ECO/805/2003','Valoración de inmuebles para finalidades hipotecaria, aseguradora y de fondos','https://www.boe.es/buscar/act.php?id=BOE-A-2003-7253'],
+ ['RD 1492/2011 — Reglamento de Valoraciones de la Ley de Suelo','Valoración de suelo rural y urbanizado (expropiación, reparcelación…)','https://www.boe.es/buscar/act.php?id=BOE-A-2011-17629'],
+ ['RDLeg 2/2004 — Haciendas Locales (TRLRHL)','IBI y plusvalía municipal (arts. 104–110)','https://www.boe.es/buscar/act.php?id=BOE-A-2004-4214'],
+ ['RD-ley 26/2021','Reforma de la plusvalía municipal: doble método y no sujeción sin incremento','https://www.boe.es/buscar/act.php?id=BOE-A-2021-18276'],
+ ['RDLeg 1/1993 — LITPAJD','ITP, operaciones societarias y AJD; exenciones del art. 45','https://www.boe.es/buscar/act.php?id=BOE-A-1993-25359'],
+ ['Ley 29/1987 — Impuesto sobre Sucesiones y Donaciones','Regulación estatal del ISD (las CCAA fijan reducciones y bonificaciones)','https://www.boe.es/buscar/act.php?id=BOE-A-1987-28141'],
+ ['Ley Hipotecaria (texto de 1946)','Registro de la Propiedad, inscripción, cancelaciones (art. 82)','https://www.boe.es/buscar/act.php?id=BOE-A-1946-2453'],
+ ['Código Civil','Compraventa (1445 ss.), arras (1454), donación (618 ss., 633), comunidad (392 ss.), partición (1051 ss.)','https://www.boe.es/buscar/act.php?id=BOE-A-1889-4763'],
+ ['Ley 29/1994 — Arrendamientos Urbanos (LAU)','Alquiler de vivienda y uso distinto','https://www.boe.es/buscar/act.php?id=BOE-A-1994-26003'],
+ ['Ley 5/2019 — Crédito Inmobiliario','FEIN, acta notarial previa, vencimiento anticipado, gastos hipotecarios','https://www.boe.es/buscar/act.php?id=BOE-A-2019-3814'],
+ ['Ley 1/2000 — Enjuiciamiento Civil (LEC)','Ejecución dineraria e hipotecaria, subastas (arts. 655 ss., 681 ss.)','https://www.boe.es/buscar/act.php?id=BOE-A-2000-323'],
+ ['Ley 12/2023 — por el derecho a la vivienda','Zonas tensionadas, límites de renta, obligaciones de información','https://www.boe.es/buscar/act.php?id=BOE-A-2023-12203'],
+ ['Ley 49/1960 — Propiedad Horizontal','Comunidades: certificado de deudas (art. 9.1.e), acuerdos, obras','https://www.boe.es/buscar/act.php?id=BOE-A-1960-10906'],
+];
+$('list-normas').innerHTML=NORMAS.map(n=>`<div class="norm-item"><div><div class="nm">${n[0]}</div><div class="nd">${n[1]}</div></div><a href="${n[2]}" target="_blank" rel="noopener">Consultar</a></div>`).join('');
+
+/* ================= Biblioteca de fórmulas ================= */
+const FORMULAS=[
+ ['Comparación · homogeneización','€/m² homog. = (Precio ÷ Sup.) × C₁ × C₂ × C₃ × C₄ → V = media × sup.','sys-homog',
+  '<p>Testigo vendido por <b>200.000 €</b> con <b>100 m²</b> → 2.000 €/m². Tu inmueble está mejor situado (C=1,05) pero peor conservado (C=0,95): 2.000 × 1,05 × 0,95 = <b>1.995 €/m²</b>. La media de los tres testigos homogeneizados sale a 2.010 €/m² → tu vivienda de 90 m² ≈ <b>180.900 €</b>.</p>'],
+ ['Comparación · ponderación','P = Σ(nota × peso) → €/m² ajustado = €/m² × P_objeto ÷ P_testigo','sys-pond',
+  '<p>Pesos: situación 0,4 · calidad 0,3 · estado 0,3. Tu local puntúa 8/7/7 → P = 8×0,4+7×0,3+7×0,3 = <b>7,4</b>. Un testigo a 2.000 €/m² puntúa 6,8 → 2.000 × 7,4 ÷ 6,8 = <b>2.176 €/m²</b> ajustado.</p>'],
+ ['Comparación · tabla de fondo','C.T.F. = Σ% ÷ nº cuadrículas · V₁ᶜ = €/m²×100 ÷ C.T.F.','sys-tf',
+  '<p>Ejemplo del temario: testigo a 1.850 €/m² con C.T.F. 89,44 → V₁ᶜ = 1.850×100÷89,44 = <b>2.068 €</b>. Ponderando los 5 testigos, la 1ª crujía del local objeto vale 1.953,9 €; con C.T.F. propio de 74,23 → 1.953,9 × 0,7423 = <b>1.450 €/m²</b>. Local de 325 m² ≈ <b>471.400 €</b>.</p>'],
+ ['Comparación · clásico','V = media(€/m² testigos) × superficie','sys-clasico',
+  '<p>Tres testigos casi idénticos: 1.850, 2.300 y 1.720 €/m² → media <b>1.956,67 €/m²</b>. Local de 120 m² ≈ <b>234.800 €</b>.</p>'],
+ ['Homogeneización reglada por antigüedad','Vv′ = Vv × (1−F+F·β) ÷ (1−F+F·βᵢ)','c-antiguedad',
+  '<p>Vv = 2.000 €/m², peso de la construcción F = 0,6, β del objeto 0,85 y βᵢ del testigo 1,00 → Vv′ = 2.000 × (0,4+0,6×0,85) ÷ (0,4+0,6×1) = 2.000 × 0,91 = <b>1.820 €/m²</b>.</p>'],
+ ['Coste · reposición bruto','VRB = Suelo + Construcción + Gastos necesarios','m-coste',
+  '<p>Suelo 60.000 € + construcción 90 m² × 750 €/m² = 67.500 € + gastos 14 % (9.450 €) → VRB = <b>136.950 €</b>.</p>'],
+ ['Coste · depreciación física','Dep = (Construcción + Gastos) × antigüedad ÷ vida útil','m-coste',
+  '<p>Vivienda de 25 años (vida útil 100): (67.500 + 9.450) × 25 ÷ 100 = <b>19.238 €</b> de depreciación. El suelo no se deprecia.</p>'],
+ ['Coste · reposición neto','VRN = VRB − Dep. física − Dep. funcional','m-coste',
+  '<p>136.950 − 19.238 − 0 = <b>117.712 €</b> (≈ 1.308 €/m²).</p>'],
+ ['Residual estático (solar)','F = VM × (1 − b) − Σ Cᵢ','m-solar',
+  '<p>1.000 m² edificables a 2.200 €/m² vendidos = 2.200.000 €. Con margen del 18 %: × 0,82 = 1.804.000 €. Restas construcción (800.000 €) y gastos 16 % (128.000 €) → el solar vale <b>876.000 €</b> (876 €/m² edificable).</p>'],
+ ['Obra en construcción','V = Suelo + Obra ejecutada + Gastos proporcionales','m-obra',
+  '<p>Suelo 300.000 € + 55 % de un presupuesto de 900.000 € (495.000 €) + gastos 14 % (69.300 €) = <b>864.300 €</b>.</p>'],
+ ['Rústica (RD 1492/2011)','V = [Renta ÷ (r × coef. cultivo)] × u (u ≤ 2)','m-rustica',
+  '<p>Olivar de 10 ha con renta neta de 600 €/ha = 6.000 €/año. Tipo 3,2 % × coef. 0,43 = 1,376 % → 6.000 ÷ 0,01376 ≈ <b>436.000 €</b> (43.600 €/ha) con u = 1.</p>'],
+ ['Actualización de rentas','V = Renta neta anual ÷ tipo de actualización','m-renta',
+  '<p>Piso alquilado a 1.200 €/mes: 14.400 € brutos − 1.800 € de gastos = 12.600 € netos. Al 5,5 % → 12.600 ÷ 0,055 = <b>229.100 €</b>.</p>'],
+ ['ITP compraventa usada','Cuota = Base × tipo autonómico','i-venta',
+  '<p>Vivienda usada por 250.000 € en Andalucía (7 %): <b>17.500 €</b> de ITP. Si el valor de referencia catastral fuera 260.000 €, se tributa por 260.000 → 18.200 €.</p>'],
+ ['Obra nueva','IVA 10 % (vivienda) o 21 % + AJD = Base × tipo','i-venta',
+  '<p>Obra nueva de 250.000 €: IVA 25.000 € + AJD 1,2 % (3.000 €) = <b>28.000 €</b> de impuestos.</p>'],
+ ['ISD (esquema)','Cuota = (Base − reducciones) × tarifa × coef. − bonificaciones','i-herencia',
+  '<p>Hijo que hereda vivienda de 250.000 € en Andalucía: reducción de hasta 1.000.000 € para grupos I-II → base liquidable <b>0 € y cuota 0 €</b>. Un sobrino (grupo III) no tiene esa reducción ni la bonificación del 99 %: la factura puede superar los 30.000 €.</p>'],
+ ['IRPF ganancia patrimonial','Ganancia = V. transmisión − V. adquisición → tarifa del ahorro 19–30 %','i-donacion',
+  '<p>Ganancia de 130.000 €: 6.000×19 % + 44.000×21 % + 80.000×23 % = <b>28.780 €</b> de IRPF.</p>'],
+ ['Plusvalía · método objetivo','Cuota = V. catastral suelo × coef. años × tipo (≤30 %)','i-plusvalia',
+  '<p>Suelo catastral 40.000 €, 12 años de tenencia (coef. vigente 0,11), tipo de Málaga 29 %: 40.000 × 0,11 × 0,29 = <b>1.276 €</b>.</p>'],
+ ['Plusvalía · método real','Cuota = Ganancia × % suelo catastral × tipo','i-plusvalia',
+  '<p>Mismo caso con ganancia real de 100.000 € y suelo = 42 % del catastral: 100.000 × 0,42 × 0,29 = 12.180 €. Como la objetiva daba 1.276 €, <b>se paga la objetiva</b>: siempre la menor.</p>'],
+ ['Rentabilidad bruta alquiler','Rb = renta anual ÷ valor × 100','m-renta',
+  '<p>14.400 € de renta anual sobre un valor de 229.100 € → <b>6,3 % bruto</b>. Réstale gastos e impuestos para la neta (aquí ≈ 5,5 %).</p>'],
+];
+function openEjemplo(i){
+  const f=FORMULAS[i];
+  $('info-title').textContent='Ejemplo: '+f[0];
+  $('info-body').innerHTML=`<div class="formula">${f[1]}</div>${f[3]}`;
+  $('info-overlay').classList.add('open');
+}
+$('list-formulas').innerHTML=FORMULAS.map((f,i)=>`<div class="norm-item"><div><div class="nm">${f[0]}</div><div class="nd" style="font-family:Georgia,serif;font-size:.9rem;color:var(--ink)">${f[1]}</div></div><div style="display:flex;gap:6px;flex-shrink:0"><button class="btn small" style="background:var(--amber)" onclick="openEjemplo(${i})">ejemplo</button><button class="btn small ghost" onclick="openInfo('${f[2]}')">ver detalle</button></div></div>`).join('');
+
+/* ================= Pasos interactivos (guías) ================= */
+function renderSteps(listId, progId, data){
+  $(listId).innerHTML=data.map((s,i)=>`
+   <div class="step" id="${listId}-s${i}">
+     <div class="step-head">
+       <input type="checkbox" onclick="event.stopPropagation();stepDone('${listId}','${progId}',${i},this.checked)">
+       <div class="st-title">${i+1}. ${s[0]}${s[2]?`<span class="plazo-tag">${s[2]}</span>`:''}</div>
+       <span class="st-toggle">detalle ▾</span>
+     </div>
+     <div class="step-body">${s[1]}</div>
+   </div>`).join('');
+  $(listId).querySelectorAll('.step-head').forEach(h=>h.addEventListener('click',e=>{
+    if(e.target.type==='checkbox')return;
+    h.closest('.step').classList.toggle('open');
+  }));
+}
+function stepDone(listId,progId,i,ok){
+  $(listId+'-s'+i).classList.toggle('done',ok);
+  const boxes=[...$(listId).querySelectorAll('input[type=checkbox]')];
+  $(progId).style.width=(boxes.filter(b=>b.checked).length/boxes.length*100)+'%';
+}
+
+const GUIA=[
+ ['Contrato de arras','Normalmente <b>arras penitenciales</b> (art. 1454 CC): si desiste el comprador pierde la señal; si desiste el vendedor, la devuelve duplicada. Señal habitual ~10 %. Fija por escrito: precio, plazo para escriturar, quién paga cada gasto, cargas y contingencia de financiación («si el banco no concede, se devuelven las arras»).','señal ~10 %'],
+ ['Comprobación registral y de cargas','Pide <b>nota simple actualizada</b>: titularidad, hipotecas, embargos, servidumbres, afecciones fiscales. Verifica coincidencia de superficie y descripción con la realidad y con Catastro (y su <b>valor de referencia</b>, que marcará la base del impuesto).','antes de arras'],
+ ['Situación de comunidad, IBI e ITE','Certificado de la comunidad de estar al corriente (art. 9.1.e LPH, lo emite el secretario/administrador), último recibo de IBI (el inmueble responde de los no prescritos) e informe de la ITE/IEE si el edificio está obligado.',''],
+ ['Certificado de eficiencia energética','Obligatorio para anunciar y para vender. Lo aporta el vendedor; regístralo en el organismo autonómico.',''],
+ ['Financiación: tasación y FEIN','El banco encarga tasación ECO/805 a sociedad homologada. Con la oferta en firme entrega la <b>FEIN</b> y la FiAE, que deben estar en poder del comprador al menos <b>10 días naturales</b> antes de la firma (Ley 5/2019).','FEIN 10 días antes'],
+ ['Acta notarial previa (hipoteca)','El comprador acude al notario —gratis y sin el banco— a resolver dudas y firmar el acta de transparencia. Sin acta no puede firmarse la hipoteca.','antes de la firma'],
+ ['Preparación de la firma','Pide la <b>minuta</b> de la escritura con antelación y revísala. Prepara los medios de pago (transferencia OMF o cheques bancarios): el notario los identifica en la escritura. Si hay hipoteca del vendedor, se coordina la <b>cancelación económica</b> con provisión de fondos en el mismo acto.',''],
+ ['Firma de la escritura pública','Ante notario: comprobación de cargas telemática el mismo día, lectura, firma, entrega de llaves. El notario presenta telemáticamente <b>copia autorizada al Registro</b> ese mismo día (asiento de presentación).','día D'],
+ ['Liquidación de impuestos','Comprador: <b>modelo 600</b> (ITP en usada o AJD en nueva) en 30 días hábiles. Vendedor: <b>plusvalía municipal</b> en 30 días hábiles e IRPF en la renta del año siguiente. Sin justificante del 600 el Registro no inscribe.','30 días hábiles'],
+ ['Inscripción en el Registro de la Propiedad','El registrador califica e inscribe en <b>15 días hábiles</b> desde que tiene todo (escritura + impuestos). El asiento de presentación protege 60 días. Retira después la copia con la inscripción practicada.','15 días hábiles'],
+ ['Después de inscribir','Cambio de titularidad en Catastro (<b>modelo 900D</b>, 2 meses; el notario suele comunicarlo), cambio de suministros y domiciliaciones, aviso al administrador de la comunidad y archivo del expediente completo.','2 meses (900D)'],
+];
+renderSteps('list-guia','prog-guia',GUIA);
+
+const CANCEL=[
+ ['Detectar la carga','En la nota simple aparece la hipoteca aunque esté pagada: la deuda se extingue al pagar, pero la <b>inscripción solo se borra cancelándola</b>. Hazlo aflorar en la captación para no frenar la venta después.',''],
+ ['Certificado de deuda cero','Se solicita al banco. Es <b>gratuito</b> y el banco está obligado a emitirlo y a colaborar en la cancelación.','gratuito'],
+ ['Escritura de cancelación','Un apoderado del banco comparece ante notario y otorga la carta de pago y cancelación. El banco no puede cobrar por esta gestión; notaría y registro los paga el interesado (coste orientativo total 300–600 €). Puede encargarse a la gestoría del propio interesado, no es obligatoria la del banco.',''],
+ ['Modelo 600 exento','La cancelación de hipoteca está <b>exenta de AJD</b>, pero el modelo 600 se presenta igualmente marcando la exención. Sin él, el Registro no despacha.','30 días hábiles'],
+ ['Inscripción de la cancelación','Se presenta la escritura en el Registro; el registrador cancela el asiento en el plazo ordinario de calificación (15 días hábiles). Pide nota simple nueva para comprobar que la finca queda libre.','15 días hábiles'],
+ ['Alternativa: cancelación por caducidad','Si la hipoteca venció hace mucho, el art. 82 de la Ley Hipotecaria permite cancelar <b>por caducidad, sin escritura</b>, mediante simple instancia, una vez transcurrido el plazo legal (con carácter general, 21 años desde el vencimiento de la obligación que consta en el Registro). Útil en herencias con cargas antiquísimas.','instancia simple'],
+];
+renderSteps('list-cancel','prog-cancel',CANCEL);
+
+const EJEC=[
+ ['Impago y vencimiento anticipado','En préstamos con consumidores (Ley 5/2019): mínimo <b>12 cuotas o el 3 %</b> del capital en la primera mitad del préstamo, o <b>15 cuotas / 7 %</b> en la segunda, más requerimiento de pago con un mes de plazo. Hasta el último momento cabe negociar: dación, venta ordinaria o reestructuración suele ser mejor que la subasta.',''],
+ ['Demanda ejecutiva','El acreedor presenta demanda (ejecución hipotecaria arts. 681 ss. LEC, o ejecución ordinaria de sentencia/título judicial arts. 517 ss.). El juzgado despacha ejecución por capital, intereses y costas.',''],
+ ['Requerimiento de pago y certificación de cargas','Se requiere de pago al deudor y el Registro expide <b>certificación de dominio y cargas</b>, practicando nota marginal: desde ahí, cualquier comprador del inmueble queda avisado del procedimiento.','nota marginal'],
+ ['Convocatoria de subasta electrónica','La subasta se celebra en el <b>Portal de Subastas del BOE</b> (subastas.boe.es), con anuncio previo y 20 días naturales de puja. Para pujar: identificación en el portal y depósito del 5 % del valor de subasta.','20 días de puja'],
+ ['Adjudicación','Rigen los mínimos de los arts. 670–671 LEC: con postores, la mejor postura si supera los umbrales legales; sin postores, el acreedor puede adjudicarse el bien (en vivienda habitual, por el 70 % del valor de subasta, o el 60 % en determinados casos). El ejecutado puede liberar el bien pagando antes de la aprobación del remate.','arts. 670–671 LEC'],
+ ['Decreto de adjudicación y título','El Letrado de la Administración de Justicia dicta <b>decreto de adjudicación</b>; su testimonio es el título inscribible. Se libra además <b>mandamiento de cancelación</b> de la hipoteca ejecutada y de todas las cargas posteriores.','título inscribible'],
+ ['Inscripción y cargas','El adjudicatario inscribe con el testimonio + mandamiento y liquida ITP (las adjudicaciones judiciales tributan como transmisión). Las cargas <b>anteriores</b> a la ejecutada subsisten: descuéntalas siempre al calcular el precio máximo de puja.','¡cargas previas subsisten!'],
+ ['Posesión y lanzamiento','Si el ocupante no entrega voluntariamente, se solicita el lanzamiento. En vivienda habitual pueden aplicarse suspensiones para deudores vulnerables según la normativa vigente en cada momento: compruébalo antes de estimar plazos al cliente inversor.','plazos variables'],
+];
+renderSteps('list-ejec','prog-ejec',EJEC);
+
+/* ================= Macroentorno ampliado ================= */
+MACRO.push(
+ ['Político-legal','Regulación de la vivienda turística (VUT) en el municipio y la comunidad'],
+ ['Económico','Rentabilidad bruta del alquiler en la zona frente al coste hipotecario'],
+ ['Económico','Visados de obra nueva y promociones en comercialización (oferta futura)'],
+ ['Económico','Previsión de tipos del BCE y su traslado esperado al euríbor'],
+ ['Sociodemográfico','Población flotante: turismo, estudiantes, trabajadores desplazados'],
+ ['Tecnológico','Posicionamiento digital propio: web, Google Business, reseñas'],
+ ['Entorno local','Suelo disponible y desarrollos urbanísticos previstos en el PGOU'],
+ ['Competencia','Número de agencias activas y cuota estimada en la zona'],
+ ['Competencia','Propuesta de valor de los 3 competidores principales'],
+ ['Competencia','Política de honorarios y de exclusivas dominante en la plaza']
+);
+(function(){ /* reagrupar por categoría y re-renderizar */
+  const orden=[]; MACRO.forEach(i=>{ if(!orden.includes(i[0])) orden.push(i[0]); });
+  MACRO.sort((a,b)=>orden.indexOf(a[0])-orden.indexOf(b[0]));
+  renderChecklist('list-macro','prog-macro',MACRO);
+})();
+document.querySelector('#p-macro .card').insertAdjacentHTML('afterend',
+ `<button class="btn" onclick="askReport('macro')">Generar informe de macroentorno</button>`);
+
+/* ================= DAFO: listados previos (chips) ================= */
+const DAFO_SUG={
+ 'dafo-D':['Poca cartera en exclusiva','Marca poco conocida en la zona','Dependencia de un único portal','Sin base de datos de compradores cualificada','Equipo comercial reducido','Procesos sin digitalizar (CRM, firma)','Fotografía y anuncios mejorables','Sin especialización de producto'],
+ 'dafo-A':['Subida o mantenimiento de tipos altos','Competencia low-cost / proptech','Declaración de zona tensionada','Caída de la demanda solvente','Más oferta de obra nueva competidora','Endurecimiento del crédito bancario','Cambios fiscales autonómicos','Estacionalidad fuerte del mercado local'],
+ 'dafo-F':['Conocimiento profundo del micromercado','Cartera de compradores activos','Reputación y reseñas positivas','Equipo con formación en tasación','Red de colaboradores (MLS)','Buena ubicación del local','Servicios integrales (fiscal, hipotecas)','Especialización reconocible (rústico, lujo, alquiler)'],
+ 'dafo-O':['Demanda extranjera creciente','Bolsa de herencias sin gestionar','Obra nueva que revaloriza el barrio','Competencia lenta en digitalización','Demanda de alquiler insatisfecha','Ayudas a rehabilitación y eficiencia','Nuevas infraestructuras anunciadas','Propietarios cansados de vender solos']
+};
+Object.entries(DAFO_SUG).forEach(([tid,items])=>{
+  const box=$(tid).closest('.dafo-box');
+  box.insertAdjacentHTML('beforeend',
+    `<p class="hint" style="margin-top:8px">Sugerencias (pulsa para añadir):</p><div>`+
+    items.map(s=>`<button class="chip" onclick="addChip(this,'${tid}')">${s}</button>`).join('')+`</div>`);
+});
+function addChip(btn,tid){
+  const ta=$(tid);
+  ta.value=(ta.value?ta.value.replace(/\s*$/,'')+'\n':'')+'• '+btn.textContent;
+  btn.classList.add('used');
+}
+document.querySelectorAll('#p-dafo .card')[1].insertAdjacentHTML('afterend',
+ `<button class="btn" onclick="askReport('dafo')">Generar informe DAFO + CAME</button>`);
+
+/* ================= Motor de informes ================= */
+let lastReportHTML='';
+function askReport(kind){
+  $('ask-text').textContent = kind==='macro'
+    ? '¿Quieres que elabore ahora el informe de macroentorno con los puntos marcados como analizados?'
+    : '¿Quieres que elabore ahora el informe con el diagnóstico DAFO y el plan CAME introducidos?';
+  $('ask-yes').onclick=()=>{ $('ask-overlay').classList.remove('open'); showReport(kind==='macro'?buildMacroReport():buildDafoReport()); };
+  $('ask-overlay').classList.add('open');
+}
+function showReport(html){ lastReportHTML=html; $('report-body').innerHTML=html; $('report-view').classList.add('open'); }
+function closeReport(){ $('report-view').classList.remove('open'); }
+function printReport(){
+  document.body.classList.add('report-mode');
+  const off=()=>document.body.classList.remove('report-mode');
+  window.onafterprint=off; window.print(); setTimeout(off,2000);
+}
+function downloadReport(){
+  try{
+    const doc=`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Informe</title><style>body{font-family:Georgia,serif;max-width:760px;margin:40px auto;line-height:1.55;color:#1e2a32;padding:0 20px}h1{font-size:1.5rem}h2{font-size:1.1rem;border-bottom:2px solid #d5dce1;padding-bottom:4px;color:#1b3a5c}ul{margin:6px 0 14px 22px}.rep-meta{color:#51606b;font-size:.85rem}</style></head><body>${lastReportHTML}</body></html>`;
+    const url=URL.createObjectURL(new Blob([doc],{type:'text/html'}));
+    const a=document.createElement('a'); a.href=url; a.download='informe_inmobiliario.html'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+  }catch(e){ alert('Tu navegador ha bloqueado la descarga: usa «Imprimir / guardar PDF».'); }
+}
+const hoy=()=>new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+
+function buildMacroReport(){
+  const boxes=[...$('list-macro').querySelectorAll('.check-item')];
+  const hechos=[],pend=[];
+  boxes.forEach((b,i)=>{ (b.querySelector('input').checked?hechos:pend).push(MACRO[i]); });
+  const pct=Math.round(hechos.length/boxes.length*100);
+  const grupo=arr=>{ const g={}; arr.forEach(([c,t])=>{ (g[c]=g[c]||[]).push(t); }); 
+    return Object.entries(g).map(([c,its])=>`<h2>${c}</h2><ul>${its.map(t=>`<li>${t}</li>`).join('')}</ul>`).join(''); };
+  let concl='';
+  if(pct===100) concl='<p>El análisis externo está completo. Con esta foto del macroentorno ya puedes fijar posicionamiento, política de precios y plan de captación con base sólida; revísalo trimestralmente.</p>';
+  else if(pct>=60) concl=`<p>El análisis está avanzado (${pct} %). Antes de tomar decisiones de estrategia o inversión, cierra los puntos pendientes: son los que suelen esconder sorpresas (normativa local y oferta futura, sobre todo).</p>`;
+  else concl=`<p>El análisis está en una fase inicial (${pct} %). Recomendación: dedicar una sesión de trabajo a completar al menos los bloques Político-legal y Económico antes de fijar precios o comprometer inversión en marketing.</p>`;
+  return `<h1>Informe de análisis del macroentorno</h1><div class="rep-meta">Created By Hi · ${hoy()} · ${hechos.length} de ${boxes.length} factores analizados (${pct} %)</div>
+  ${hechos.length?'<h2>✔ Factores analizados</h2>'+grupo(hechos):''}
+  ${pend.length?'<h2>⏳ Pendientes de analizar (próximos pasos)</h2>'+grupo(pend):''}
+  <h2>Conclusión y guía</h2>${concl}
+  <p>Guía de trabajo: 1) completar pendientes con fuentes oficiales (INE, ayuntamiento, colegio de registradores, portales); 2) trasladar los hallazgos al DAFO como amenazas y oportunidades; 3) convertirlos en acciones con el plan CAME; 4) fijar fecha de revisión.</p>`;
+}
+function buildDafoReport(){
+  const g=id=>$(id).value.split('\n').map(s=>s.replace(/^[•\-\s]+/,'').trim()).filter(Boolean);
+  const D=g('dafo-D'),A=g('dafo-A'),F=g('dafo-F'),O=g('dafo-O');
+  const came=[['Corregir las debilidades',$('came-C')],['Afrontar las amenazas',$('came-A')],['Mantener las fortalezas',$('came-M')],['Explotar las oportunidades',$('came-E')]]
+    .map(([t,el])=>{ const its=el?el.value.split('\n').map(s=>s.replace(/^[•\-\s]+/,'').trim()).filter(Boolean):[]; return its.length?`<h2>${t}</h2><ul>${its.map(x=>`<li>${x}</li>`).join('')}</ul>`:''; }).join('');
+  const interno=F.length-D.length, externo=O.length-A.length;
+  let estrategia,detalle;
+  if(interno>=0&&externo>=0){estrategia='ofensiva';detalle='predominan fortalezas y oportunidades: es momento de crecer (más captación en exclusiva, ampliar zona o servicios).';}
+  else if(interno>=0&&externo<0){estrategia='defensiva';detalle='hay fortalezas pero el entorno amenaza: protege la cartera y la rentabilidad, fideliza y diferénciate antes que expandirte.';}
+  else if(interno<0&&externo>=0){estrategia='de reorientación';detalle='el entorno ofrece oportunidades que hoy no puedes aprovechar: prioriza corregir las debilidades internas que te frenan.';}
+  else {estrategia='de supervivencia';detalle='debilidades y amenazas dominan: reduce riesgos, concentra recursos en lo que funciona y replantea el modelo.';}
+  const lista=(t,arr)=>arr.length?`<h2>${t}</h2><ul>${arr.map(x=>`<li>${x}</li>`).join('')}</ul>`:'';
+  return `<h1>Informe DAFO + CAME</h1><div class="rep-meta">Created By Hi · ${hoy()} · D:${D.length} A:${A.length} F:${F.length} O:${O.length}</div>
+  ${lista('Debilidades',D)}${lista('Amenazas',A)}${lista('Fortalezas',F)}${lista('Oportunidades',O)}
+  ${came?'<h1 style="font-size:1.2rem;margin-top:18px">Plan CAME</h1>'+came:''}
+  <h2>Conclusiones</h2>
+  <p>El balance interno (F−D) es ${interno>=0?'positivo':'negativo'} y el externo (O−A) es ${externo>=0?'favorable':'adverso'}. La orientación recomendada es una <b>estrategia ${estrategia}</b>: ${detalle}</p>
+  <h2>Guía a seguir</h2>
+  <p>1) Elige un máximo de 3 acciones CAME prioritarias y asigna responsable y fecha. 2) Define un indicador por acción (captaciones/mes, exclusivas, tiempo medio de venta, reseñas). 3) Revisa el cuadro cada trimestre y actualiza el DAFO cada año o ante cambios normativos o de mercado relevantes.</p>`;
+}
+
+
+/* ================= Simulador: pestañas y nuevos supuestos ================= */
+bindTabs('tabs-sim');
+function calcACO(){
+  const precio=num('aco-precio'), prima=num('aco-prima'), meses=num('aco-plazo');
+  const renta=num('aco-renta'), pct=num('aco-pct')/100, pd=parseFloat($('aco-primadesc').value);
+  const rentasTotal=renta*meses, descRentas=rentasTotal*pct, descPrima=prima*pd;
+  const aPagar=Math.max(0,precio-descPrima-descRentas);
+  const perdidaNoEjerce=prima+0; // la prima se pierde; las rentas fueron uso de la vivienda
+  ficha('ficha-sim','Alquiler con opción a compra',[
+    ['Precio de compra pactado',fmtE.format(precio)],
+    ['Prima de la opción',fmtE.format(prima)+(pd<1?` (descuenta ${fmtN.format(pd*100)} %)`:' (descuenta 100 %)')],
+    ['Rentas del periodo ('+meses+' meses)',fmtE.format(rentasTotal)],
+    ['Descuento por rentas ('+fmtN.format(pct*100)+' %)','−'+fmtE.format(descRentas)],
+    ['Descuento por prima','−'+fmtE.format(descPrima)],
+    ['Si NO ejerce: pierde',fmtE.format(perdidaNoEjerce)+' de prima'],
+  ],'A pagar al ejercer la opción',fmtE.format(aPagar),'', 'Fiscalidad orientativa: el arrendamiento tributa como alquiler; la prima suele tributar como transmisión patrimonial (opción, art. 14.2 LITPAJD) y, al ejercerse, la compraventa liquida su ITP por el precio total. El propietario declara rentas y prima en IRPF. Formalizadlo por escrito y, mejor, en escritura para poder inscribir la opción.');
+}
+function calcPermuta(){
+  const a=num('pm-a'), b=num('pm-b'), t=num('pm-itp')/100;
+  const comp=b-a;
+  const itpCliente=b*t, itpOtro=a*t;
+  const gan=Math.max(0,a-num('pm-adq')), irpf=irpfAhorro(gan);
+  ficha('ficha-sim','Permuta de inmuebles',[
+    ['Entrega (valor)',fmtE.format(a)],
+    ['Recibe (valor)',fmtE.format(b)],
+    ['Compensación en metálico',comp>=0?fmtE.format(comp)+' a pagar por tu cliente':fmtE.format(-comp)+' a recibir'],
+    ['ITP de tu cliente (sobre lo que recibe)',fmtE.format(itpCliente)],
+    ['ITP de la otra parte (sobre lo que recibe)',fmtE.format(itpOtro)],
+    ['Ganancia IRPF estimada de tu cliente',fmtE.format(gan)+' → '+fmtE.format(irpf)],
+  ],'Coste fiscal estimado de tu cliente',fmtE.format(itpCliente+irpf),'', 'La permuta es una doble transmisión: cada permutante paga ITP (o IVA si procede) por lo que adquiere, su plusvalía municipal por lo que entrega y su IRPF por la ganancia de lo entregado. La base es el valor de mercado o de referencia, el mayor.');
+}
+function calcNuda(){
+  const v=num('np-valor');
+  let pctU;
+  if($('np-tipo').value==='vit'){ pctU=Math.min(70,Math.max(10,89-num('np-edad'))); }
+  else { pctU=Math.min(70,num('np-anos')*2); }
+  const usu=v*pctU/100, nuda=v-usu;
+  ficha('ficha-sim','Nuda propiedad y usufructo',[
+    ['Valor del pleno dominio',fmtE.format(v)],
+    ['Usufructo ('+fmtN.format(pctU)+' %)',fmtE.format(usu)],
+    ['Nuda propiedad ('+fmtN.format(100-pctU)+' %)',fmtE.format(nuda)],
+  ],'Valor de la nuda propiedad',fmtE.format(nuda),fmtE.format(usu)+' el usufructo','Reglas del art. 10.2.a LITPAJD (vitalicio: 89 − edad, mín. 10 %, máx. 70 %; temporal: 2 % por año, máx. 70 %). Al consolidarse el dominio por fallecimiento del usufructuario, el nudo propietario liquida por el porcentaje que faltaba. En la venta de nuda propiedad, el mercado suele pagar algo menos que este valor fiscal: úsalo como referencia, no como precio.');
+}
+
+/* ================= Plusvalía: coeficientes vigentes y municipios ================= */
+/* Tabla estatal vigente en 2026: RD-ley 8/2023 (el RDL 16/2025 decayó el 27-01-2026 al no convalidarse) */
+const COEF_PLUSVALIA={0:0.14,1:0.15,2:0.15,3:0.15,4:0.17,5:0.18,6:0.20,7:0.22,8:0.23,9:0.21,10:0.16,11:0.13,12:0.11,13:0.10,14:0.10,15:0.10,16:0.10,17:0.13,18:0.17,19:0.23,20:0.40};
+const MUNIS=[
+ ['Málaga',29,'Tipo 29 % según la Ordenanza fiscal nº 5 del Ayuntamiento de Málaga.'],
+ ['Benalmádena',30,null],['Alhaurín de la Torre',30,null],['Fuengirola',30,null],
+ ['Antequera',30,null],['Marbella',30,null],['Torremolinos',30,null],['Estepona',30,null],
+ ['Nerja',30,null],['Vélez-Málaga (Torre del Mar)',30,null],['Rincón de la Victoria',30,null],
+ ['Otro municipio',30,null],
+];
+$('fp-muni').innerHTML=MUNIS.map((m,i)=>`<option value="${i}">${m[0]}</option>`).join('');
+$('fp-anos').innerHTML=Object.keys(COEF_PLUSVALIA).map(a=>`<option value="${a}"${a==='10'?' selected':''}>${a==='0'?'Menos de 1 año':a==='20'?'20 años o más':a+' años'}</option>`).join('');
+function fpSync(){
+  const m=MUNIS[parseInt($('fp-muni').value)];
+  $('fp-tipo').value=m[1];
+  $('fp-coef').value=COEF_PLUSVALIA[parseInt($('fp-anos').value)];
+  $('fp-muni-nota').innerHTML = m[2] ? m[2]+' Coeficiente = máximo estatal vigente (RD-ley 8/2023): confirma si la ordenanza aplica uno menor.'
+   : 'Se cargan el <b>tipo máximo legal (30 %)</b> y el <b>coeficiente máximo estatal vigente</b> (RD-ley 8/2023). La ordenanza de este ayuntamiento puede fijar valores menores: verifícalo en el simulador oficial del <a href="https://portalweb.prpmalaga.es/opencms/opencms/prpweb/servicios/estimacionIIVTNU/" target="_blank" rel="noopener">Patronato de Recaudación de Málaga</a> o en la ordenanza municipal antes de dar la cifra al cliente.';
+}
+$('fp-muni').addEventListener('change',fpSync);
+$('fp-anos').addEventListener('change',fpSync);
+fpSync();
+
+/* ================= Cajas "Saber +" bajo cada ficha ================= */
+const SABER={
+ 'p-local':`<p><b>Dónde encontrar testigos de locales:</b> cierres recientes de tu propia agencia y de colegas (MLS), portales filtrando por calle, y el dato de rentas: en zonas comerciales el valor se contrasta bien capitalizando el alquiler (un local que renta 2.000 €/mes al 7 % apunta a ~343.000 €).</p>
+ <p><b>Ojo con:</b> locales «en bruto» vs montados (la instalación puede valer 300–600 €/m²), licencias de actividad existentes (un local con licencia de hostelería vale más), y no confundir <b>traspaso</b> (cesión del negocio y contrato) con venta del inmueble.</p>`,
+ 'p-vivienda':`<p><b>Antes de dar el valor:</b> comprueba el <b>valor de referencia catastral</b> (marca el suelo fiscal de la operación), que la superficie registral, la catastral y la real coincidan, y si es <b>VPO</b> con precio máximo legal vigente.</p>
+ <p><b>Para la captación:</b> entrega el informe con los 6 testigos documentados; es tu mejor herramienta frente al propietario que «necesita» 30.000 € más. Y recuerda: el precio lo pone el mercado, tu trabajo es demostrarlo con datos.</p>`,
+ 'p-coste':`<p><b>Cuándo usar el coste:</b> inmuebles singulares sin comparables (naves especiales, equipamientos), valoraciones a efectos de seguro (valor de reconstrucción, sin suelo) y como contraste de coherencia del valor por comparación.</p>
+ <p><b>De dónde sacar el coste de construcción:</b> módulos de los colegios de arquitectos y aparejadores de Málaga, actualizados cada año. El coste no incluye el beneficio del constructor si contratas por administración.</p>`,
+ 'p-solar':`<p><b>Lo que multiplica o hunde el valor de un solar:</b> la edificabilidad real (m² de techo, no de suelo), el uso permitido, las cargas de urbanización pendientes y los plazos de licencia. Pide siempre <b>cédula urbanística</b> al ayuntamiento.</p>
+ <p><b>Truco de negociación:</b> en suelo con incertidumbre, la compra se estructura con opción de compra sujeta a obtención de licencia: el promotor asegura el suelo sin arriesgar el precio completo.</p>`,
+ 'p-obra':`<p><b>Riesgos a revisar:</b> licencia de obras vigente (caducan), seguro decenal contratado (obligatorio en vivienda para vender), deudas con la constructora (pueden anotar embargos) y avales de las cantidades entregadas a cuenta por compradores (Ley 38/1999, D.A. 1ª): sin aval, ese dinero está en riesgo.</p>
+ <p><b>Referencia de avance por capítulos:</b> cimentación y estructura ~30–35 %, albañilería y cubierta ~25 %, instalaciones ~20 %, acabados ~20–25 %. Contrasta el % certificado con lo que ves en la visita.</p>`,
+ 'p-rustica':`<p><b>Lo que cambia el valor en rústico:</b> derechos de agua y comunidad de regantes, acceso rodado y servidumbres de paso, y las edificaciones: una construcción irregular puede regularizarse en Andalucía vía <b>AFO</b> (asimilado a fuera de ordenación), con coste y limitaciones que hay que descontar.</p>
+ <p><b>Cuidado comercial:</b> en rústico el precio por hectárea varía muchísimo entre secano y regadío colindantes; nunca extrapoles sin comprobar el aprovechamiento real en SIGPAC y Catastro.</p>`,
+ 'p-renta':`<p><b>Vender con inquilino dentro:</b> el contrato sigue vigente para el comprador (subrogación) y el inquilino de vivienda tiene <b>tanteo y retracto</b> (art. 25 LAU) salvo renuncia pactada: hay que notificarle el precio fehacientemente antes de vender.</p>
+ <p><b>Bruta vs neta:</b> al inversor preséntale siempre las dos. De la bruta a la neta se van típicamente 1,5–2,5 puntos entre IBI, comunidad, seguro, mantenimiento y vacancia.</p>`,
+ 'p-simulador':`<p><b>Psicología del precio de salida:</b> las primeras 2–3 semanas concentran la máxima visibilidad en portales; salir un 10 % por encima de mercado «quema» el anuncio y acaba vendiendo por debajo. Mejor salir fino y generar tensión de demanda.</p>
+ <p><b>En operaciones especiales</b> (opción a compra, permuta, nuda propiedad) el contrato lo es todo: llévalas siempre a escritura pública con asesoramiento, y cobra tus honorarios sobre el valor total de la operación, no solo sobre la parte en metálico.</p>`,
+ 'p-fiscal':`<p><b>Quién paga qué</b> (salvo pacto): comprador ITP/IVA-AJD, notaría según arancel (el otorgante la matriz, el interesado las copias) y registro; vendedor plusvalía municipal e IRPF. En hipotecas, desde la Ley 5/2019 el banco asume notaría, registro, gestoría y AJD del préstamo.</p>
+ <p><b>Valor de referencia:</b> si es superior al precio real, se puede tributar por él y luego <b>impugnarlo</b> (rectificación de autoliquidación) aportando tasación: informa al cliente de esta vía antes de que renuncie a comprar.</p>`,
+};
+Object.entries(SABER).forEach(([pid,html])=>{
+  const fichaEl=document.querySelector('#'+pid+' .ficha');
+  if(fichaEl) fichaEl.insertAdjacentHTML('afterend',
+    `<details class="saber"><summary>Saber +</summary><div class="saber-body">${html}</div></details>`);
+});
+
+
+/* ================= Steppers y deslizadores ================= */
+function stp(btn,dir){
+  const i=btn.parentElement.querySelector('input');
+  const st=parseFloat(i.dataset.st||'0.05');
+  const min=i.dataset.min!==undefined?parseFloat(i.dataset.min):-Infinity;
+  const max=i.dataset.max!==undefined?parseFloat(i.dataset.max):Infinity;
+  let v=(parseFloat(i.value)||0)+dir*st;
+  v=Math.min(max,Math.max(min,Math.round(v*100)/100));
+  i.value=st>=1?v:v.toFixed(2);
+  stpPaint(i);
+}
+function stpPaint(i){
+  if(i.dataset.st!=='0.05')return;
+  const v=parseFloat(i.value);
+  i.classList.toggle('up',v>1.001); i.classList.toggle('down',v<0.999);
+}
+function stpc(v){ /* coeficiente 0,05 */
+  return `<span class="stp"><button type="button" class="stp-b" onclick="stp(this,-1)">−</button><input type="number" value="${Number(v).toFixed(2)}" data-st="0.05" data-min="0.5" data-max="1.5" oninput="stpPaint(this)"><button type="button" class="stp-b" onclick="stp(this,1)">+</button></span>`;
+}
+function stps(v){ /* puntuación 1–10 */
+  return `<span class="stp"><button type="button" class="stp-b" onclick="stp(this,-1)">−</button><input type="number" value="${v}" data-st="1" data-min="1" data-max="10"><button type="button" class="stp-b" onclick="stp(this,1)">+</button></span>`;
+}
+function paintLast(tbl){
+  const rows=$(tbl).tBodies[0].rows;
+  if(rows.length) rows[rows.length-1].querySelectorAll('input[data-st="0.05"]').forEach(stpPaint);
+}
+function wSync(){
+  let sum=0;
+  for(let k=1;k<=4;k++){ const v=num('pd-w'+k); sum+=v; $('pd-w'+k+'v').textContent=fmtN.format(v)+' %'; }
+  const b=$('pd-wsum');
+  b.textContent='Suma de pesos: '+fmtN.format(sum)+' %'+(sum===100?'':' — ajusta hasta 100');
+  b.className='wsum '+(sum===100?'ok':'bad');
+}
+
+/* Redefinición de filas con steppers (sustituye a las versiones iniciales) */
+addRowHomog=function(p=380000,s=200,c1=1,c2=1,c3=1,c4=1){ nH++;
+  $('tbl-homog').tBodies[0].insertAdjacentHTML('beforeend', rowHTML([`T${nH}`,inp(p),inp(s),stpc(c1),stpc(c2),stpc(c3),stpc(c4)])); paintLast('tbl-homog'); };
+addRowPond=function(p=1900,a=7,b=7,c=7,d=7){ nP++;
+  $('tbl-pond').tBodies[0].insertAdjacentHTML('beforeend', rowHTML([`T${nP}`,inp(p),stps(a),stps(b),stps(c),stps(d)])); };
+addRowViv=function(p=210000,s=85,c1=1,c2=1,c3=1,c4=1){ nV++;
+  $('tbl-viv').tBodies[0].insertAdjacentHTML('beforeend', rowHTML([`T${nV}`,inp(p),inp(s),stpc(c1),stpc(c2),stpc(c3),stpc(c4)])); paintLast('tbl-viv'); };
+
+/* Reconstruir las filas de ejemplo con los nuevos controles */
+(function(){
+  ['tbl-homog','tbl-pond','tbl-viv'].forEach(t=>$(t).tBodies[0].innerHTML='');
+  nH=0;nP=0;nV=0;
+  addRowHomog(390000,210,1,1.05,1,1); addRowHomog(345000,180,0.95,1,1.05,1); addRowHomog(420000,230,1,0.95,0.95,1);
+  addRowPond(1850,8,6,7,7); addRowPond(2300,9,8,9,8); addRowPond(1720,7,7,6,7);
+  addRowViv(215000,88,1,1,1,1); addRowViv(198000,82,1.05,1,0.95,1); addRowViv(232000,95,0.95,1.05,1,1);
+})();
+
+/* ================= Alquiler · renta óptima ================= */
+INFO['m-alquiler']={t:'Renta de mercado y renta óptima — fórmulas',h:`
+<div class="formula">€/m²/mes homog. = (Renta ÷ Sup.) × C_sit × C_estado × C_extras</div>
+<div class="formula">Renta de mercado = media homogeneizada × superficie</div>
+<div class="formula">Ingreso neto anual = Renta × (12 − meses de vacancia) − gastos fijos × 12</div>
+<p>La <b>renta óptima</b> es la que maximiza el ingreso neto anual: subir la renta un 8 % no compensa si tarda dos meses más en alquilarse.</p>
+<h5>Guía de coeficientes en alquiler</h5>
+<table class="mtab"><tr><th>Comparación</th><th>Coeficiente</th></tr>
+<tr><td>Tu vivienda reformada y el testigo original</td><td>1,05 – 1,15</td></tr>
+<tr><td>Tu vivienda amueblada y el testigo sin amueblar</td><td>1,05 – 1,10</td></tr>
+<tr><td>Con terraza / exterior frente a interior</td><td>1,05</td></tr>
+<tr><td>Sin ascensor en planta alta frente a testigo con él</td><td>0,90</td></tr></table>
+<h5>Marco legal básico (LAU y Ley 12/2023)</h5>
+<p>Vivienda habitual: 5 años prorrogables (7 si el arrendador es persona jurídica) · fianza de 1 mes + garantías adicionales de hasta 2 mensualidades · actualización anual según el índice pactado con los límites legales vigentes · en <b>zonas tensionadas</b> declaradas, la renta de los nuevos contratos puede quedar limitada: compruébalo antes de publicar.</p>`};
+document.querySelector('#p-alquiler .panel-head').insertAdjacentHTML('afterend',
+  helpCard('hc-concept','m-alquiler','Conceptos, fórmulas y ejemplos','Comparación de rentas, modelo de vacancia y marco básico de la LAU'));
+
+/* cabeceras clicables de la tabla de alquiler */
+(function(){
+  const keys=['testigo','precio-m2','superficie','c-situacion','c-antiguedad','c-otros'];
+  const ths=$('tbl-alq').tHead.rows[0].cells;
+  keys.forEach((k,i)=>{ if(!k)return; const th=ths[i];
+    th.innerHTML=`<button class="th-btn" onclick="openInfo('${k}')" title="Ver explicación">${th.textContent} ⓘ</button>`; });
+})();
+
+let nA=0, alqMercado=0, alqGastos=0;
+function addRowAlq(r=850,s=75,c1=1,c2=1,c3=1){ nA++;
+  $('tbl-alq').tBodies[0].insertAdjacentHTML('beforeend', rowHTML([`T${nA}`,inp(r),inp(s),stpc(c1),stpc(c2),stpc(c3)])); paintLast('tbl-alq'); }
+addRowAlq(850,75,1,1,1); addRowAlq(980,85,0.95,1.05,1); addRowAlq(790,70,1,0.95,1.05);
+
+function vacancia(dev){ return dev>=0 ? 0.5+dev*0.18 : Math.max(0.15, 0.5+dev*0.06); }
+function calcAlq(){
+  const rows=readRows('tbl-alq'); if(!rows.length) return;
+  const unit=rows.map(r=>{ const [rt,s,c1,c2,c3]=r; return s? (rt/s)*c1*c2*c3 : 0; }).filter(v=>v>0);
+  if(!unit.length) return;
+  const media=unit.reduce((a,b)=>a+b,0)/unit.length;
+  alqMercado=media*num('al-sup'); alqGastos=num('al-gastos');
+  /* barrido para localizar el óptimo */
+  let best={dev:0,neto:-Infinity};
+  const tb=$('al-out').tBodies[0]; tb.innerHTML='';
+  for(let dev=-12;dev<=12;dev+=3){
+    const renta=alqMercado*(1+dev/100), vac=vacancia(dev);
+    const neto=renta*(12-vac)-alqGastos*12;
+    if(neto>best.neto) best={dev,neto,renta,vac};
+  }
+  for(let dev=-12;dev<=12;dev+=3){
+    const renta=alqMercado*(1+dev/100), vac=vacancia(dev);
+    const neto=renta*(12-vac)-alqGastos*12;
+    tb.insertAdjacentHTML('beforeend',`<tr class="${dev===best.dev?'optimo':''}"><td>${dev>0?'+':''}${dev} %${dev===0?' (mercado)':''}${dev===best.dev?' ★ óptimo':''}</td><td class="num">${fmtE.format(renta)}</td><td class="num">${fmtN.format(vac)} meses</td><td class="num">${fmtE.format(neto)}</td></tr>`);
+  }
+  $('al-simcard').style.display='block';
+  $('al-dev').value=best.dev; simAlq(best);
+}
+function simAlq(best){
+  const dev=parseFloat($('al-dev').value);
+  $('al-devv').textContent=(dev>0?'+':'')+dev+' %';
+  const renta=alqMercado*(1+dev/100), vac=vacancia(dev);
+  const neto=renta*(12-vac)-alqGastos*12;
+  const lineas=[
+    ['Renta de mercado',fmtE.format(alqMercado)+' /mes'],
+    ['€/m²/mes de mercado',fmtE2.format(num('al-sup')?alqMercado/num('al-sup'):0)],
+    ['Posicionamiento elegido',(dev>0?'+':'')+dev+' %'],
+    ['Vacancia estimada',fmtN.format(vac)+' meses'],
+    ['Ingreso neto anual',fmtE.format(neto)],
+  ];
+  const valor=num('al-valor');
+  if(valor>0){
+    lineas.push(['Rentabilidad bruta',fmtN.format(renta*12/valor*100)+' %']);
+    lineas.push(['Rentabilidad neta',fmtN.format(neto/valor*100)+' %']);
+  }
+  let nota='Modelo orientativo de vacancia; contrástalo con los tiempos reales de tu zona. Fianza legal de 1 mes + hasta 2 mensualidades de garantía adicional (LAU).';
+  if($('al-zona').value==='si') nota='⚠ ZONA TENSIONADA declarada: la renta del nuevo contrato puede estar limitada (Ley 12/2023) por el contrato anterior o por el índice estatal de referencia (SERPAVI: serpavi.mivau.gob.es). Verifica el límite aplicable antes de publicar: puede estar por debajo de la renta calculada.';
+  ficha('ficha-alquiler','Renta de alquiler',lineas,'Renta recomendada',fmtE.format(renta)+' /mes','ingreso neto anual: '+fmtE.format(neto),nota);
+}
+
+/* Saber + del módulo de alquiler */
+document.querySelector('#p-alquiler .ficha').insertAdjacentHTML('afterend',
+ `<details class="saber"><summary>Saber +</summary><div class="saber-body">
+ <p><b>Blindar el cobro:</b> scoring del inquilino (nóminas, vida laboral, ratio renta ≤ 35–40 % de ingresos), seguro de impago (~3–5 % de la renta anual, suele exigir ese ratio) y garantías adicionales de hasta 2 mensualidades permitidas por la LAU.</p>
+ <p><b>Pequeñas inversiones que suben renta:</b> pintura y luz (rentabilísimas), amueblar bien en zonas de demanda joven (+5–10 %), y certificado energético decente: los suministros pesan cada vez más en la decisión del inquilino.</p>
+ <p><b>Gestión:</b> actualiza la renta cada año según el índice pactado (con los límites legales vigentes), repercute lo pactado por contrato y documenta la entrega con inventario fotográfico firmado: la fianza deja de ser un problema.</p>
+ </div></details>`);
+
+
+/* ================= Homi · asesor de IA ================= */
+const homiHist=[];
+function homiPush(cls,html){
+  $('homi-msgs').insertAdjacentHTML('beforeend',`<div class="homi-b ${cls}">${html}</div>`);
+  $('homi-msgs').scrollTop=$('homi-msgs').scrollHeight;
+}
+function homiAsk(q){ $('homi-q').value=q; homiSend(); }
+async function homiSend(){
+  const q=$('homi-q').value.trim(); if(!q) return;
+  $('homi-q').value='';
+  homiPush('user',q.replace(/</g,'&lt;'));
+  homiHist.push({role:'user',content:q});
+  homiPush('bot','<i>Homi está pensando…</i>');
+  const thinking=$('homi-msgs').lastElementChild;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',max_tokens:1000,
+        system:'Eres Homi, el asesor virtual de una app española de valoración inmobiliaria (Created By Hi). Responde SIEMPRE en español, breve (máximo ~150 palabras), claro y sin jerga, como un agente inmobiliario experimentado. Base normativa: Orden ECO/805/2003 (tasación), RD 1492/2011 (suelo rústico), método de comparación con testigos y coeficientes, método del coste, residual, actualización de rentas; fiscalidad: ITP/AJD, ISD, plusvalía municipal (RD-ley 26/2021, doble método), IRPF ganancias, LAU y Ley 12/2023 (zonas tensionadas, índice SERPAVI). Si el dato depende de la comunidad autónoma, del ayuntamiento o puede haber cambiado, adviértelo y remite a la fuente oficial (BOE, Catastro, ordenanza municipal, SERPAVI). Nunca inventes cifras ni tipos: si no estás seguro, dilo. No des asesoramiento fiscal o legal vinculante: recomienda profesional colegiado para liquidaciones.',
+        messages:homiHist.slice(-12)
+      })
+    });
+    const data=await r.json();
+    const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    if(!txt) throw new Error('vacío');
+    homiHist.push({role:'assistant',content:txt});
+    thinking.innerHTML=txt.replace(/</g,'&lt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>');
+  }catch(e){
+    /* Sin conexión con la IA (p. ej., app desplegada fuera de Claude): respuesta con la base de conocimiento local */
+    const local=homiLocal(q);
+    thinking.innerHTML=local;
+  }
+}
+/* Base de conocimiento local: busca la ficha de ayuda más relevante */
+const HOMI_KB=[
+ [['testigo','comparable','muestra'],'testigo'],
+ [['reformado','antiguedad','antigüedad','estado','conservacion','conservación'],'c-antiguedad'],
+ [['situacion','situación','ubicacion','ubicación','calle','zona'],'c-situacion'],
+ [['planta','altura','ascensor'],'c-planta'],
+ [['superficie','metros','m2','tamaño'],'c-superficie'],
+ [['ponderacion','ponderación','pesos','puntuacion','puntuación'],'sys-pond'],
+ [['tabla de fondo','crujia','crujía','escaparate','fondo'],'sys-tf'],
+ [['homogeneiza','coeficiente'],'sys-homog'],
+ [['coste','reposicion','reposición','vrb','vrn','deprecia'],'m-coste'],
+ [['solar','residual','edificab'],'m-solar'],
+ [['obra','construccion','construcción','promocion','promoción','certificacion','certificación'],'m-obra'],
+ [['rustic','rústic','olivar','finca','cultivo','secano','regadio','regadío'],'m-rustica'],
+ [['hereda','herencia','sucesion','sucesión','fallec','muerte','650'],'i-herencia'],
+ [['donacion','donación','donar','regalar','651'],'i-donacion'],
+ [['divorcio','condominio','gananciales','separacion','separación','extincion','extinción'],'i-divorcio'],
+ [['plusvalia','plusvalía','iivtnu','catastral'],'i-plusvalia'],
+ [['itp','iva','ajd','comprar','compra','600','impuesto'],'i-venta'],
+ [['alquiler','renta','arrenda','inquilino','tensionada','serpavi','lau'],'m-alquiler'],
+ [['arrendado','actualizacion','actualización','capitaliza','rentabilidad'],'m-renta'],
+ [['hipoteca','vivienda','tasacion','tasación','valorar piso','valor de mercado'],'m-vivienda'],
+];
+function homiLocal(q){
+  const s=q.toLowerCase();
+  let best=null,score=0;
+  HOMI_KB.forEach(([kws,key])=>{
+    const n=kws.filter(k=>s.includes(k)).length;
+    if(n>score){score=n;best=key;}
+  });
+  if(best && INFO[best]){
+    return `<b>${INFO[best].t}</b><br>`+INFO[best].h+`<p class="hint" style="margin-top:8px">Nota: ahora mismo respondo con la guía integrada de la app (sin conexión al asesor de IA). Para el caso concreto, abre el módulo correspondiente y sus cajas de ayuda.</p>`;
+  }
+  return `No he encontrado esa duda en mi guía integrada. Prueba a preguntarme por: testigos y coeficientes, sistemas de comparación, coste de reposición, solar, obra en construcción, rústica, alquiler, o los impuestos de compra, herencia, donación, divorcio y plusvalía. También tienes toda la teoría en las cajas <b>ⓘ</b> de cada módulo y en la <b>Biblioteca de fórmulas</b>.`;
+}
+
+</script>
+<!-- ✔ FIN DEL CÓDIGO · Gabinete de Valoración · Created By Hi · Si puedes leer esta línea, el archivo se ha transmitido COMPLETO (≈2.400 líneas, JS íntegro incluido en este mismo archivo, sin dependencias externas) -->
+</body>
+</html>
